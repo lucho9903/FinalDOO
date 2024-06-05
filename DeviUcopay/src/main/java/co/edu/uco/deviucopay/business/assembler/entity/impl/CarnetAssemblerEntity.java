@@ -1,0 +1,53 @@
+package co.edu.uco.deviucopay.business.assembler.entity.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+import co.edu.uco.deviucopay.business.assembler.entity.AssemblerEntity;
+import co.edu.uco.deviucopay.business.domain.CarnetDomain;
+import co.edu.uco.deviucopay.business.domain.CuentaDomain;
+import co.edu.uco.deviucopay.crosscutting.helpers.ObjectHelper;
+import co.edu.uco.deviucopay.entity.CarnetEntity;
+import co.edu.uco.deviucopay.entity.CuentaEntity;
+
+public class CarnetAssemblerEntity implements AssemblerEntity<CarnetDomain, CarnetEntity>{
+	private static final AssemblerEntity<CarnetDomain, CarnetEntity> instance=new CarnetAssemblerEntity();
+	private static final AssemblerEntity<CuentaDomain, CuentaEntity> cuentaAssembler = CuentaAssemblerEntity.getInstance();
+	
+	private CarnetAssemblerEntity(){
+        super();
+    }
+
+    public static final AssemblerEntity<CarnetDomain, CarnetEntity> getInstance(){
+    	return instance;
+    }
+
+    @Override
+	public final CarnetDomain toDomain(final CarnetEntity data) {
+		var CarnetEntityTmp = ObjectHelper.getObjectHelper().getDefaultValue(data, CarnetEntity.build());
+		var cuentaDomain = cuentaAssembler.toDomain(CarnetEntityTmp.getCuenta());
+		return CarnetDomain.build(CarnetEntityTmp.getId(), CarnetEntityTmp.getNumeroCarnet(), cuentaDomain);
+	}
+
+	@Override
+	public final CarnetEntity toEntity(final CarnetDomain domain) {
+		var CarnetDomainTmp = ObjectHelper.getObjectHelper().getDefaultValue(domain, CarnetDomain.build());
+		var cuentaEntity = cuentaAssembler.toEntity(CarnetDomainTmp.getCuenta());
+		return CarnetEntity.build().setId(CarnetDomainTmp.getId())
+				.setNumeroCarnet(CarnetDomainTmp.getNumeroCarnet()).setCuenta(cuentaEntity);
+	}
+
+	@Override
+	public List<CarnetDomain> toDomainCollection(List<CarnetEntity> entityCollection) {
+		var entityCollectionTmp = ObjectHelper.getObjectHelper().getDefaultValue(entityCollection,
+				new ArrayList<CarnetEntity>());
+		return entityCollectionTmp.stream().map(this::toDomain).toList();
+	}
+
+	@Override
+	public List<CarnetEntity> toEntityCollection(List<CarnetDomain> domainCollection) {
+		var domainCollectionTmp = ObjectHelper.getObjectHelper().getDefaultValue(domainCollection,
+				new ArrayList<CarnetDomain>());
+		return domainCollectionTmp.stream().map(this::toEntity).toList();
+	}
+
+}

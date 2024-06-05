@@ -1,0 +1,218 @@
+package co.edu.uco.deviucopay.data.dao.entity.concrete.azuresql;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import co.edu.uco.deviucopay.crosscutting.exceptions.customs.DataDeviUcopayException;
+import co.edu.uco.deviucopay.crosscutting.helpers.FloatHelper;
+import co.edu.uco.deviucopay.crosscutting.helpers.ObjectHelper;
+import co.edu.uco.deviucopay.crosscutting.helpers.TextHelper;
+import co.edu.uco.deviucopay.data.dao.entity.AfiliadoDAO;
+import co.edu.uco.deviucopay.data.dao.entity.CuentaDAO;
+import co.edu.uco.deviucopay.data.dao.entity.TipoCuentaDAO;
+import co.edu.uco.deviucopay.data.dao.entity.TipoIdentificacionDAO;
+import co.edu.uco.deviucopay.data.dao.entity.concrete.SqlConnection;
+import co.edu.uco.deviucopay.entity.AfiliadoEntity;
+import co.edu.uco.deviucopay.entity.CuentaEntity;
+import co.edu.uco.deviucopay.entity.TipoCuentaEntity;
+
+public class CuentaPostgresqlDAO extends SqlConnection implements CuentaDAO{
+	private final TipoCuentaDAO tipoCuentaDAO;
+	
+	public CuentaPostgresqlDAO(final Connection connection, final TipoCuentaDAO tipoCuentaDAO) {
+		super(connection);
+		this.tipoCuentaDAO = tipoCuentaDAO;
+	}
+
+	@Override
+	public final void crear(final CuentaEntity data) {
+        final StringBuilder sentenciasSql = new StringBuilder();
+
+        sentenciasSql.append("INSERT INTO cuenta (id, nombre, departamento) ");
+        sentenciasSql.append("VALUES (?, ?, ?, ?, ?, ?)");
+
+        try (final PreparedStatement sentenciaSqlPreparada = getConexion().prepareStatement(sentenciasSql.toString())) {
+        	sentenciaSqlPreparada.setObject(1, data.getId());
+            sentenciaSqlPreparada.setString(2, data.getNumeroCuenta());
+            sentenciaSqlPreparada.setObject(3, data.getPin());
+            sentenciaSqlPreparada.setObject(4, data.getSaldo());
+            sentenciaSqlPreparada.setObject(5, data.getTipoCuenta().getId());
+            sentenciaSqlPreparada.setObject(6, data.getAfiliado().getId());
+       
+
+            sentenciaSqlPreparada.executeUpdate();
+
+        } catch (final SQLException exception) {
+            var mensajeUsuario = "Se ha presentado un problema tratando de crear la cuenta  por favor intente de nuevo y si el problema persiste contacte al administrador...";
+            var mensajeTecnico = "Se ha presentado una excepción de tipo SQLException tratando de realizar el INSERT de la cuenta para más detalles revise la excepción raíz presentada..";
+
+            throw new DataDeviUcopayException(mensajeTecnico, mensajeUsuario, exception);
+        } catch (final Exception exception) {
+            var mensajeUsuario = "Se ha presentado un problema tratando de crear la cuenta  por favor intente de nuevo y si el problema persiste contacte al administrador...";
+            var mensajeTecnico = "Se ha presentado un problema INESPERADO con una excepción de tipo Exception tratando de realizar el INSERT de la cuenta  para más detalles revise la excepción raíz presentada..";
+
+            throw new DataDeviUcopayException(mensajeTecnico, mensajeUsuario, exception);
+        }
+    }
+
+	@Override
+	public void modificar(CuentaEntity data) {
+		 final StringBuilder sentenciasSql = new StringBuilder();
+
+	        sentenciasSql.append("UPDATE cuenta ");
+	        sentenciasSql.append("SET contraseña = ?");
+	        sentenciasSql.append("WHERE id = ?");
+
+	        try (final PreparedStatement sentenciaSqlPreparada = getConexion().prepareStatement(sentenciasSql.toString())) {
+
+	            sentenciaSqlPreparada.setString(1, data.getPin());
+	            
+
+	            sentenciaSqlPreparada.executeUpdate();
+
+	        } catch (final SQLException exception) {
+	            var mensajeUsuario = "Se ha presentado un problema tratando de modificar la cuenta por favor intente de nuevo y si el problema persiste contacte al administrador...";
+	            var mensajeTecnico = "Se ha presentado una excepción de tipo SQLException tratando de realizar el UPDATE de la cuenta para más detalles revise la excepción raíz presentada..";
+
+	            throw new DataDeviUcopayException(mensajeTecnico, mensajeUsuario, exception);
+	        } catch (final Exception exception) {
+	            var mensajeUsuario = "Se ha presentado un problema tratando de modificar la cuenta  por favor intente de nuevo y si el problema persiste contacte al administrador...";
+	            var mensajeTecnico = "Se ha presentado un problema INESPERADO con una excepción de tipo Exception tratando de realizar el UPDATE de la cuenta  para más detalles revise la excepción raíz presentada..";
+
+	            throw new DataDeviUcopayException(mensajeTecnico, mensajeUsuario, exception);
+	        }
+	}
+
+	public List<CuentaEntity> consultar(CuentaEntity data) {
+		final StringBuilder sentenciaSql = new StringBuilder();
+		sentenciaSql.append("select s.id, s.nombreCuenta, s.direccion, s.correoelectronico, s.celdascarro,");
+		sentenciaSql.append(" s.celdamoto, s.caldascamion, c.id as idCiudad,");
+		sentenciaSql.append(" c.nombre as nombreciudad, d.id as idDepartamento,");
+		sentenciaSql.append(" d.nombre as nombredepartamento, p.id as idPais,");
+		sentenciaSql.append(" p.nombre as nombrepais, par.id as idParqueadero, ");
+		sentenciaSql.append(" par.nombre as nombreparqueadero, t.id as idTipoCuenta, t.nombre as tipoCuenta");
+		sentenciaSql.append(" from Cuenta s");
+		sentenciaSql.append(" inner join ciudad c on c.id = s.ciudad_id");
+		sentenciaSql.append(" inner join departamento d on d.id = c.departamento_id");
+		sentenciaSql.append(" inner join pais p on p.id = d.pais_id");
+		sentenciaSql.append(" inner join parqueadero par on par.id = s.parqueadero_id");
+		sentenciaSql.append(" inner join tipoCuenta t on t.id = s.tipoCuenta_id");
+		sentenciaSql.append(" WHERE 1=1");
+
+		final List<Object> parametros = new ArrayList<>();
+
+		if (!ObjectHelper.getObjectHelper().isNull(data.getId()) && !data.getId().equals(UUIDHelper.getDefault())) {
+			sentenciaSql.append(" AND s.id = ?");
+			parametros.add(data.getId());
+		}
+
+		if (!TextHelper.isNullOrEmpty(data.getNumeroCuenta())) {
+			sentenciaSql.append(" AND s.nombreCuenta= ?");
+			parametros.add(data.getNumeroCuenta());
+		}
+
+		if (!FloatHelper.ZERO(data.getSaldo())) {
+			sentenciaSql.append(" AND s.correoelectronico = ?");
+			parametros.add(data.getSaldo());
+		}
+
+		if (!TextHelper.isNullOrEmpty(data.getDireccion())) {
+			sentenciaSql.append(" AND s.direccion = ?");
+			parametros.add(data.getDireccion());
+		}
+
+		if (!ObjectHelper.getObjectHelper().isNull(data.getParqueadero())
+				&& !ObjectHelper.getObjectHelper().isNull(data.getParqueadero().getId())
+				&& !data.getParqueadero().getId().equals(UUIDHelper.getDefault())) {
+			sentenciaSql.append(" AND par.id = ?");
+			parametros.add(data.getParqueadero().getId());
+		}
+
+		final List<CuentaEntity> Cuentas = new ArrayList<>();
+
+		try (final PreparedStatement sentenciaSqlPreparada = getConexion().prepareStatement(sentenciaSql.toString())) {
+			for (int i = 0; i < parametros.size(); i++) {
+				sentenciaSqlPreparada.setObject(i + 1, parametros.get(i));
+			}
+
+			try (final ResultSet resultado = sentenciaSqlPreparada.executeQuery()) {
+				while (resultado.next()) {
+					CuentaEntity Cuenta = new CuentaEntity();
+					Cuenta.setId(UUIDHelper.convertToUUID(resultado.getString("id")));
+					Cuenta.setNombre(resultado.getString("nombreCuenta"));
+					Cuenta.setDireccion(resultado.getString("direccion"));
+					Cuenta.setCorreoElectronico(resultado.getString("correoelectronico"));
+					Cuenta.setCeldasCarro(resultado.getInt("celdascarro"));
+					Cuenta.setCeldasMoto(resultado.getInt("celdamoto"));
+					Cuenta.setCeldascamion(resultado.getInt("caldascamion"));
+
+					CiudadEntity ciudad = CiudadEntity.build();
+					ciudad.setId(UUIDHelper.convertToUUID(resultado.getString("idCiudad")));
+					Cuenta.setCiudad(ciudad);
+
+					DepartamentoEntity departamento = DepartamentoEntity.build();
+					departamento.setId(UUIDHelper.convertToUUID(resultado.getString("idDepartamento")));
+					Cuenta.setDepartamento(departamento);
+
+					PaisEntity pais = PaisEntity.build();
+					pais.setId(UUIDHelper.convertToUUID(resultado.getString("idPais")));
+					Cuenta.setPais(pais);
+
+					TipoCuentaEntity tipoCuenta = TipoCuentaEntity.build();
+					tipoCuenta.setId(UUIDHelper.convertToUUID(resultado.getString("idTipoCuenta")));
+					Cuenta.setTipoCuenta(tipoCuenta);
+
+					ParqueaderoEntity parqueadero = ParqueaderoEntity.build();
+					parqueadero.setId(UUIDHelper.convertToUUID(resultado.getString("idParqueadero")));
+					Cuenta.setParqueadero(parqueadero);
+
+					Cuentas.add(Cuenta);
+				}
+			}
+
+		} catch (SQLException excepcion) {
+			var mensajeUsuario = MessageCatalogStrategy.getContenidoMensaje(CodigoMensaje.M00031);
+			var mensajeTecnico = MessageCatalogStrategy.getContenidoMensaje(CodigoMensaje.M00053);
+			throw new DataGPException(mensajeUsuario, mensajeTecnico, excepcion);
+
+		} catch (Exception excepcion) {
+			var mensajeUsuario = MessageCatalogStrategy.getContenidoMensaje(CodigoMensaje.M00031);
+			var mensajeTecnico = MessageCatalogStrategy.getContenidoMensaje(CodigoMensaje.M00053);
+			throw new DataGPException(mensajeUsuario, mensajeTecnico, excepcion);
+		}
+
+		return Cuentas;
+	}
+    }
+
+	@Override
+	public void eliminar (final UUID id) {
+		 final StringBuilder sentenciasSql = new StringBuilder();
+
+	     sentenciasSql.append("DELETE FROM cuenta ");
+	     sentenciasSql.append("WHERE id = ?");
+
+	        try (final PreparedStatement sentenciaSqlPreparada = getConexion().prepareStatement(sentenciasSql.toString())) {
+
+	            sentenciaSqlPreparada.setObject(1, id);
+
+	            sentenciaSqlPreparada.executeUpdate();
+
+	        } catch (final SQLException exception) {
+	            var mensajeUsuario = "Se ha presentado un problema tratando de eliminar la cuenta con ID  por favor intente de nuevo y si el problema persiste contacte al administrador...";
+	            var mensajeTecnico = "Se ha presentado una excepción de tipo SQLException tratando de realizar el DELETE de la cuenta con ID  para más detalles revise la excepción raíz presentada..";
+
+	            throw new DataDeviUcopayException(mensajeTecnico, mensajeUsuario, exception);
+	        } catch (final Exception exception) {
+	            var mensajeUsuario = "Se ha presentado un problema tratando de eliminar la cuenta con ID por favor intente de nuevo y si el problema persiste contacte al administrador...";
+	            var mensajeTecnico = "Se ha presentado un problema INESPERADO con una excepción de tipo Exception tratando de realizar el DELETE de la cuenta con ID  para más detalles revise la excepción raíz presentada..";
+
+	            throw new DataDeviUcopayException(mensajeTecnico, mensajeUsuario, exception);
+	        }
+	    }
+
+
+}

@@ -1,0 +1,43 @@
+package co.edu.uco.deviucopay.business.assembler.entity.impl;
+
+import java.util.List;
+
+import co.edu.uco.deviucopay.business.assembler.entity.AssemblerEntity;
+import co.edu.uco.deviucopay.business.domain.AfiliadoDomain;
+import co.edu.uco.deviucopay.crosscutting.helpers.ObjectHelper;
+import co.edu.uco.deviucopay.entity.AfiliadoEntity;
+
+
+public class AfiliadoAssemblerEntity implements AssemblerEntity<AfiliadoDomain, AfiliadoEntity>{
+	private static final AssemblerEntity<AfiliadoDomain, AfiliadoEntity> instance=new AfiliadoAssemblerEntity();
+
+	
+	private AfiliadoAssemblerEntity() {
+		super();
+	}
+	
+	public static AssemblerEntity<AfiliadoDomain, AfiliadoEntity> getInstance() {
+		return instance;
+	}
+	
+	@Override
+	public AfiliadoDomain toDomain(AfiliadoEntity data) {
+		var afiliadoEntityTmp = ObjectHelper.getObjectHelper().getDefaultValue(data, AfiliadoEntity.build());
+		return AfiliadoDomain.build(afiliadoEntityTmp.getId(),afiliadoEntityTmp.getNumeroIdAfiliado(), afiliadoEntityTmp.getNombre(),afiliadoEntityTmp.getCorreo(),
+				afiliadoEntityTmp.getTelefono(),afiliadoEntityTmp.getTipoIdentificacion(),afiliadoEntityTmp.getInstitucion());
+	}
+	
+	@Override
+	public List<AfiliadoDomain> toDomainCollection(List<AfiliadoEntity> entityCollection) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public AfiliadoEntity toEntity(AfiliadoDomain domain) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+
+}

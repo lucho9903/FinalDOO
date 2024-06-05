@@ -1,0 +1,111 @@
+package co.edu.uco.deviucopay.data.dao.factory.concrete;
+
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+import co.edu.uco.deviucopay.crosscutting.exceptions.customs.DataDeviUcopayException;
+import co.edu.uco.deviucopay.crosscutting.exceptions.messageCatalog.MessageCatalogStrategy;
+import co.edu.uco.deviucopay.crosscutting.exceptions.messageCatalog.data.CodigoMensaje;
+import co.edu.uco.deviucopay.data.dao.entity.AfiliadoDAO;
+import co.edu.uco.deviucopay.data.dao.entity.CarnetDAO;
+import co.edu.uco.deviucopay.data.dao.entity.CuentaDAO;
+import co.edu.uco.deviucopay.data.dao.entity.InstitucionDAO;
+import co.edu.uco.deviucopay.data.dao.entity.TipoCuentaDAO;
+import co.edu.uco.deviucopay.data.dao.entity.TipoIdentificacionDAO;
+import co.edu.uco.deviucopay.data.dao.entity.TipoInstitucionDAO;
+import co.edu.uco.deviucopay.data.dao.entity.concrete.SqlConnection;
+import co.edu.uco.deviucopay.data.dao.factory.DAOFactory;
+
+public final class PostgresqlDAOFactory extends SqlConnection implements DAOFactory {
+
+	public PostgresqlDAOFactory() {
+		super();
+		abrirConexion();
+	}
+
+	private void abrirConexion() {
+		final String connectionUrl = "jdbc:postgresql://localhost:5433/DOO?user=postgres&password=000";
+		try {
+			setConexion(DriverManager.getConnection(connectionUrl));
+		} catch (final SQLException excepcion) {
+			var mensajeUsuario = MessageCatalogStrategy.getContenidoMensaje(CodigoMensaje.M00002);
+			var mensajeTecnico = MessageCatalogStrategy.getContenidoMensaje(CodigoMensaje.M00039);
+
+			throw new DataDeviUcopayException(mensajeTecnico, mensajeUsuario, excepcion);
+		} catch (final Exception excepcion) {
+			var mensajeUsuario = MessageCatalogStrategy.getContenidoMensaje(CodigoMensaje.M00002);
+			var mensajeTecnico = MessageCatalogStrategy.getContenidoMensaje(CodigoMensaje.M00039);
+
+			throw new DataDeviUcopayException(mensajeTecnico, mensajeUsuario, excepcion);
+		}
+	}
+
+	@Override
+	public void cerrarConexion() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void iniciarTransaccion() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void confirmarTransaccion() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void cancelarTransaccion() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public CuentaDAO getCuentaDAO() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CarnetDAO getCarnetDAO() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public AfiliadoDAO getAfiliadoDAO() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public InstitucionDAO getInstitucionDAO() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public TipoCuentaDAO getTipoCuentaDAO() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public TipoIdentificacionDAO getTipoIdentificacionDAO() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public TipoInstitucionDAO getTipoInstitucionDAO() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}
+
+}

@@ -1,0 +1,5 @@
+package co.edu.uco.deviucopay.data.dao.entity.concrete.postgresql;
+
+public class CuentaPostgresqlDAO {
+
+}

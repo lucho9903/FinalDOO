@@ -1,0 +1,19 @@
+1717346371418	Delete element
+1717346718531	Delete element
+1717346793548	Move compilation unit
+1717347768993	Delete element
+1717347817119	Delete element
+1717348433491	Move compilation unit
+1717349803526	Rename compilation unit 'AfiliadoEntit.java'
+1717474904410	Rename package 'co.edu.uco.deviucopay.business.usecase.impl.tipoCuentas'
+1717474914219	Rename package 'co.edu.uco.deviucopay.business.usecase.impl.tipoIdentificaciones'
+1717526558655	Delete element
+1717527402167	Delete element
+1717528420720	Rename type 'AfiliadoAzureSqlDAO'
+1717528432113	Rename type 'CarnetAzureSqlDAO'
+1717528443877	Rename type 'CuentaAzureSqlDAO'
+1717528451570	Rename type 'InstitucionAzuereSqlDAO'
+1717528464810	Rename type 'TipoCuentaAzureSqlDAO'
+1717528472073	Rename type 'TipoIdentificacionAzureSqlDAO'
+1717528480498	Rename type 'TipoInstitucionAzuereSqlDAO'
+1717528499761	Delete element

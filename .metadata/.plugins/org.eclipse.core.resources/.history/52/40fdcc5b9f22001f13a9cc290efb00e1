@@ -1,0 +1,97 @@
+package co.edu.uco.deviucopay.entity;
+
+import java.util.UUID;
+
+import co.edu.uco.deviucopay.crosscutting.helpers.FloatHelper;
+import co.edu.uco.deviucopay.crosscutting.helpers.ObjectHelper;
+import co.edu.uco.deviucopay.crosscutting.helpers.TextHelper;
+import co.edu.uco.deviucopay.crosscutting.helpers.UUIDHelper;
+
+public final class CuentaEntity {
+    private UUID id;
+    private String numeroCuenta;
+    private String pin;
+    private Float saldo;
+    private AfiliadoEntity afiliado;
+    private TipoCuentaEntity tipoCuenta;
+
+    public CuentaEntity() {
+        setId(UUIDHelper.getDefault());
+        setNumeroCuenta(TextHelper.EMPTY);
+        setPin(TextHelper.EMPTY);
+        setSaldo(FloatHelper.ZERO);
+        setAfiliado(AfiliadoEntity.build());
+        setTipoCuenta(TipoCuentaEntity.build());
+    }
+
+    public CuentaEntity(UUID id, String numeroCuenta, String pin,
+                        Float saldo, AfiliadoEntity afiliado,
+                        TipoCuentaEntity tipoCuenta) {
+        setId(id);
+        setNumeroCuenta(numeroCuenta);
+        setPin(pin);
+        setSaldo(saldo);
+        setAfiliado(afiliado);
+        setTipoCuenta(tipoCuenta);
+    }
+
+    public static final CuentaEntity build() {
+        return new CuentaEntity();
+    }
+
+    public final UUID getId() {
+        return id;
+    }
+
+    public final CuentaEntity setId(final UUID id) {
+        this.id = id;
+        return this;
+    }
+
+    public String getNumeroCuenta() {
+        return numeroCuenta;
+    }
+
+    public final CuentaEntity setNumeroCuenta(final String numeroCuenta) {
+        this.numeroCuenta = TextHelper.applyTrim(numeroCuenta);
+        return this;
+    }
+
+    public String getPin() {
+        return pin;
+    }
+
+    public final CuentaEntity setPin(final String Pin) {
+        this.pin = TextHelper.applyTrim(Pin);
+        return this;
+    }
+
+    public Float getSaldo() {
+        return saldo;
+    }
+
+    public final CuentaEntity setSaldo(final Float saldo) {
+        this.saldo = saldo;
+        return this;
+    }
+
+    public AfiliadoEntity getAfiliado() {
+        return afiliado;
+    }
+
+    public final CuentaEntity setAfiliado(final AfiliadoEntity afiliado) {
+        this.afiliado = ObjectHelper.getObjectHelper().getDefaultValue(afiliado, new AfiliadoEntity());
+        return this;
+    }
+
+    public TipoCuentaEntity getTipoCuenta() {
+        return tipoCuenta;
+    }
+
+    public final CuentaEntity setTipoCuenta(final TipoCuentaEntity tipoCuenta) {
+        this.tipoCuenta = ObjectHelper.getObjectHelper().getDefaultValue(tipoCuenta, new TipoCuentaEntity());
+        return this;
+    }
+
+    
+}

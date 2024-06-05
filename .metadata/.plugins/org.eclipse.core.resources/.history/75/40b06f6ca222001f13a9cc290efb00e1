@@ -1,0 +1,37 @@
+package co.edu.uco.deviucopay.data.dao.factory.concrete;
+
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+import co.edu.uco.deviucopay.crosscutting.exceptions.messageCatalog.MessageCatalogStrategy;
+import co.edu.uco.deviucopay.crosscutting.exceptions.messageCatalog.data.CodigoMensaje;
+import co.edu.uco.deviucopay.data.dao.entity.concrete.SqlConnection;
+import co.edu.uco.deviucopay.data.dao.factory.DAOFactory;
+
+public final class PostgresqlDAOFactory extends SqlConnection implements DAOFactory {
+
+	public PostgresqlDAOFactory() {
+		super();
+		abrirConexion();
+	}
+
+	private void abrirConexion() {
+		final String connectionUrl = "jdbc:postgresql://localhost:5433/DOO?user=postgres&password=000";
+		try {
+			setConexion(DriverManager.getConnection(connectionUrl));
+		} catch (final SQLException excepcion) {
+			var mensajeUsuario = MessageCatalogStrategy.getContenidoMensaje(CodigoMensaje.M00002);
+			var mensajeTecnico = MessageCatalogStrategy.getContenidoMensaje(CodigoMensaje.M00055);
+
+			throw new DataDeviUcopayException(mensajeTecnico, mensajeUsuario, excepcion);
+		} catch (final Exception excepcion) {
+			var mensajeUsuario = MessageCatalogStrategy.getContenidoMensaje(CodigoMensaje.M00002);
+			var mensajeTecnico = MessageCatalogStrategy.getContenidoMensaje(CodigoMensaje.M00055);
+
+			throw new DataDeviUcopayException(mensajeTecnico, mensajeUsuario, excepcion);
+		}
+	}
+
+}
+
+}

@@ -1,0 +1,101 @@
+package co.edu.uco.deviucopay.business.usecase.impl.cuenta;
+
+import java.util.UUID;
+import co.edu.uco.deviucopay.business.assembler.entity.impl.CuentaAssemblerEntity;
+import co.edu.uco.deviucopay.business.domain.CuentaDomain;
+import co.edu.uco.deviucopay.business.usecase.UseCaseWithoutReturn;
+import co.edu.uco.deviucopay.crosscutting.exceptions.customs.BusinessDeviUcopayException;
+import co.edu.uco.deviucopay.crosscutting.helpers.ObjectHelper;
+import co.edu.uco.deviucopay.crosscutting.helpers.TextHelper;
+import co.edu.uco.deviucopay.crosscutting.helpers.UUIDHelper;
+import co.edu.uco.deviucopay.data.dao.factory.DAOFactory;
+import co.edu.uco.deviucopay.entity.CarnetEntity;
+import co.edu.uco.deviucopay.entity.CuentaEntity;
+
+public final class RegistrarCuenta implements UseCaseWithoutReturn<CuentaDomain> {
+
+    private DAOFactory factory;
+
+    public RegistrarCuenta(final DAOFactory factory) {
+        if (ObjectHelper.getObjectHelper().isNull(factory)) {
+            var mensajeUsuario = "Se ha presentado un problema tratando de llevar a cabo el registro de una cuenta";
+            var mensajeTecnico = "El DAOFactory para crear la cuenta llegó nulo.";
+            throw new BusinessDeviUcopayException(mensajeTecnico, mensajeUsuario);
+        }
+        this.factory = factory;
+    }
+
+    @Override
+    public void execute(CuentaDomain data) {
+        validarIdentificacion(data.getIdentificacion());
+        validarFormatoCorreo(data.getCorreo());
+        validarContraseña(data.getContraseña(), data.getConfirmarContraseña());
+        validarCuentaMismoNumeroMismoCarnet(data.getNumeroCuenta(), data.getCarnet().getId());
+
+        var cuentaEntity = CuentaAssemblerEntity.getInstance().toEntity(data)
+            .setId(generarIdentificadorCuenta());
+
+        factory.getCuentaDAO().crear(cuentaEntity);
+    }
+
+    private UUID generarIdentificadorCuenta() {
+        UUID id;
+        boolean existeId;
+        do {
+            id = UUIDHelper.generate();
+            var cuentaEntity = CuentaEntity.build().setId(id);
+            var resultados = factory.getCuentaDAO().consultar(cuentaEntity);
+            existeId = !resultados.isEmpty();
+        } while (existeId);
+        return id;
+    }
+
+    private void validarTipoIdentificacion(final String tipoIdentificacion) {
+        if (TextHelper.isNullOrEmpty(tipoIdentificacion)) {
+            var mensajeUsuario = "El tipo de identificación no puede estar vacío.";
+            throw new BusinessDeviUcopayException(mensajeUsuario);
+        }
+    }
+
+    private void validarIdentificacion(final String identificacion) {
+        if (TextHelper.isNullOrEmpty(identificacion)) {
+            var mensajeUsuario = "La identificación no puede estar vacía.";
+            throw new BusinessDeviUcopayException(mensajeUsuario);
+        }
+    }
+
+    private void validarFormatoCorreo(final String correo) {
+        if (TextHelper.isNullOrEmpty(correo)) {
+            var mensajeUsuario = "El correo electrónico no puede estar vacío.";
+            throw new BusinessDeviUcopayException(mensajeUsuario);
+        }
+
+        if (!correo.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$")) {
+            var mensajeUsuario = "El formato del correo electrónico es inválido: " + correo;
+            throw new BusinessDeviUcopayException(mensajeUsuario);
+        }
+    }
+
+    private void validarContraseña(final String contraseña, final String confirmarContraseña) {
+        if (TextHelper.isNullOrEmpty(contraseña) || TextHelper.isNullOrEmpty(confirmarContraseña)) {
+            var mensajeUsuario = "Las contraseñas no pueden estar vacías.";
+            throw new BusinessDeviUcopayException(mensajeUsuario);
+        }
+
+        if (!contraseña.equals(confirmarContraseña)) {
+            var mensajeUsuario = "Las contraseñas no coinciden.";
+            throw new BusinessDeviUcopayException(mensajeUsuario);
+        }
+    }
+
+    private void validarCuentaMismoNumeroMismoCarnet(final String numeroCuenta, final UUID idCarnet) {
+        var cuentaEntity = CuentaEntity.build().setNumeroCuenta(numeroCuenta).setCarnet(CarnetEntity.build().setId(idCarnet));
+        var resultados = factory.getCuentaDAO().consultar(cuentaEntity);
+
+        if (!resultados.isEmpty()) {
+            var mensajeUsuario = "Ya existe una cuenta con el número \"" + numeroCuenta + "\" asociado al carnet.";
+            var mensajeTecnico = "La cuenta con el número proporcionado ya existe para el carnet dado.";
+            throw new BusinessDeviUcopayException(mensajeTecnico, mensajeUsuario);
+        }
+    }
+}

@@ -1,0 +1,55 @@
+package co.edu.uco.deviucopay.business.assembler.entity.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import co.edu.uco.deviucopay.business.assembler.entity.AssemblerEntity;
+import co.edu.uco.deviucopay.business.domain.AfiliadoDomain;
+import co.edu.uco.deviucopay.business.domain.TipoIdentificacionDomain;
+import co.edu.uco.deviucopay.crosscutting.helpers.ObjectHelper;
+import co.edu.uco.deviucopay.entity.AfiliadoEntity;
+import co.edu.uco.deviucopay.entity.TipoIdentificacionEntity;
+
+
+public class AfiliadoAssemblerEntity implements AssemblerEntity<AfiliadoDomain, AfiliadoEntity>{
+	private static final AssemblerEntity<AfiliadoDomain, AfiliadoEntity> instance=new AfiliadoAssemblerEntity();
+	private static final AssemblerEntity<TipoIdentificacionDomain, TipoIdentificacionEntity> tipoIdentificacionAssembler = new TipoIdentificacionEntity().getIn 
+
+	
+	private AfiliadoAssemblerEntity() {
+		super();
+	}
+	
+	public static AssemblerEntity<AfiliadoDomain, AfiliadoEntity> getInstance() {
+		return instance;
+	}
+	
+	@Override
+	public AfiliadoDomain toDomain(AfiliadoEntity data) {
+		var afiliadoEntityTmp = ObjectHelper.getObjectHelper().getDefaultValue(data, AfiliadoEntity.build());
+		var TipoIdentificacionEntity = 
+		return AfiliadoDomain.build(afiliadoEntityTmp.getId(),afiliadoEntityTmp.getNumeroIdAfiliado(), afiliadoEntityTmp.getNombre(),afiliadoEntityTmp.getCorreo(),
+				afiliadoEntityTmp.getTelefono(),afiliadoEntityTmp.getTipoIdentificacion(),afiliadoEntityTmp.getInstitucion());
+	}
+	
+	@Override
+	public AfiliadoEntity toEntity(AfiliadoDomain domain) {
+		var afiliadoDomainTmp = ObjectHelper.getObjectHelper().getDefaultValue(domain, AfiliadoDomain.build());
+		return AfiliadoEntity.build().setId(afiliadoDomainTmp.getId());
+	}
+
+	@Override
+	public List<AfiliadoDomain> toDomainCollection(List<AfiliadoEntity> entityCollection) {
+		var entityCollectionTmp = ObjectHelper.getObjectHelper().getDefaultValue(entityCollection,
+				new ArrayList<AfiliadoEntity>());
+		return entityCollectionTmp.stream().map(this::toDomain).toList();
+	}
+
+	@Override
+	public List<AfiliadoEntity> toEntityCollection(List<AfiliadoDomain> domainCollection) {
+		var domainCollectionTmp = ObjectHelper.getObjectHelper().getDefaultValue(domainCollection,
+				new ArrayList<AfiliadoDomain>());
+		return domainCollectionTmp.stream().map(this::toEntity).toList();
+	}
+
+}
