@@ -14,11 +14,9 @@ import co.edu.uco.deviucopay.crosscutting.helpers.ObjectHelper;
 import co.edu.uco.deviucopay.crosscutting.helpers.UUIDHelper;
 
 public class CarnetAssemblerDTO implements AssemblerDTO<CarnetDomain, CarnetDTO> {
-	
-	private static final AssemblerDTO<CuentaDomain, CuentaDTO> cuentaAssembler = CuentaAssemblerDTO.getInstance();
 
 	private static final AssemblerDTO<CarnetDomain, CarnetDTO>  instance = new CarnetAssemblerDTO();
-	
+	private static final AssemblerDTO<CuentaDomain, CuentaDTO> cuentaAssembler = CuentaAssemblerDTO.getInstance();
 	
 	private CarnetAssemblerDTO() {
 		super();
@@ -53,7 +51,7 @@ public class CarnetAssemblerDTO implements AssemblerDTO<CarnetDomain, CarnetDTO>
 	public List<CarnetDTO> toDTOCollection(List<CarnetDomain> domainCollection) {
 		var domainCollectionTmp = ObjectHelper.getObjectHelper().getDefaultValue(domainCollection,
 				new ArrayList<CarnetDomain>());
-		return domainCollectionTmp.stream().map(this::toDto).toList();
+		return domainCollectionTmp.stream().map(this::toDTO).toList();
 	}
 
 }

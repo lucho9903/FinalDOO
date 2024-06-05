@@ -38,15 +38,17 @@ public class InstitucionAssemblerDTO implements AssemblerDTO<InstitucionDomain, 
 	}
 
 	@Override
-	public List<InstitucionDomain> toDomainCollection(List<InstitucionDTO> entituCollection) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<InstitucionDomain> toDomainCollection(List<InstitucionDTO> dtoCollection) {
+		var dtoCollectionTmp = ObjectHelper.getObjectHelper().getDefaultValue(dtoCollection,
+				new ArrayList<InstitucionDTO>());
+		return dtoCollectionTmp.stream().map(this::toDomain).toList();
 	}
 
 	@Override
 	public List<InstitucionDTO> toDTOCollection(List<InstitucionDomain> domainCollection) {
-		// TODO Auto-generated method stub
-		return null;
+		var domainCollectionTmp = ObjectHelper.getObjectHelper().getDefaultValue(domainCollection,
+				new ArrayList<InstitucionDomain>());
+		return domainCollectionTmp.stream().map(this::toDTO).toList();
 	}
 
 }

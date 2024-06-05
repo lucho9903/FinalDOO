@@ -87,8 +87,9 @@ public class AfiliadoDTO {
 	}
 
 
-	public final void setTipoIdentificacion(TipoIdentificacionDTO tipoIdentificacion) {
+	public final AfiliadoDTO setTipoIdentificacion(TipoIdentificacionDTO tipoIdentificacion) {
 		this.tipoIdentificacion = ObjectHelper.getObjectHelper().getDefaultValue(tipoIdentificacion,new TipoIdentificacionDTO());
+		return this;
 	}
 
 
@@ -97,7 +98,8 @@ public class AfiliadoDTO {
 	}
 
 
-	public final void setInstitucion(InstitucionDTO institucion) {
-		this.institucion =  ObjectHelper.getObjectHelper().getDefaultValue(institucion,new InstitucionDTO());
+	public final AfiliadoDTO setInstitucion(InstitucionDTO institucion) {
+		this.institucion =  ObjectHelper.getObjectHelper().getDefaultValue(institucion, new InstitucionDTO());
+		return this;
 	}
 }

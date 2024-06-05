@@ -6,13 +6,18 @@ import java.util.List;
 import java.util.ArrayList;
 import co.edu.uco.deviucopay.business.assembler.dto.AssemblerDTO;
 import co.edu.uco.deviucopay.business.domain.AfiliadoDomain;
+import co.edu.uco.deviucopay.business.domain.InstitucionDomain;
+import co.edu.uco.deviucopay.business.domain.TipoIdentificacionDomain;
 import co.edu.uco.deviucopay.dto.AfiliadoDTO;
+import co.edu.uco.deviucopay.dto.InstitucionDTO;
+import co.edu.uco.deviucopay.dto.TipoIdentificacionDTO;
 import co.edu.uco.deviucopay.crosscutting.helpers.ObjectHelper;
 
-public class AfiliadoAssemblerDTO implements AssemblerDTO<AfiliadoDomain, AfiliadoDTO> {
+public final class AfiliadoAssemblerDTO implements AssemblerDTO<AfiliadoDomain, AfiliadoDTO> {
 	
 	private static final AssemblerDTO<AfiliadoDomain, AfiliadoDTO>  instance = new AfiliadoAssemblerDTO();
-	
+	private static final AssemblerDTO<InstitucionDomain, InstitucionDTO> institucionAssembler = InstitucionAssemblerDTO.getInstance();
+	private static final AssemblerDTO<TipoIdentificacionDomain, TipoIdentificacionDTO> tipoIdentificacionAssembler = TipoIdentificacionAssemblerDTO.getInstance();
 	
 	private AfiliadoAssemblerDTO() {
 		super();
@@ -23,28 +28,30 @@ public class AfiliadoAssemblerDTO implements AssemblerDTO<AfiliadoDomain, Afilia
 	}
 
 	@Override
-	public AfiliadoDomain toDomain(AfiliadoDTO data) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	@Override
-	public AfiliadoDTO toDTO(final AfiliadoDomain domain) {
-		var ciudadDomainTmp = getObjectHelper().getDefaultValue(domain, AfiliadoDomain.build());
-		return AfiliadoDTO.build().setId(ciudadDomainTmp.getId()).setNombre(ciudadDomainTmp.getNombre());
+	public AfiliadoDomain toDomain(final AfiliadoDTO data) {
+		var afiliadoDtoTmp = ObjectHelper.getObjectHelper().getDefaultValue(data, AfiliadoDTO.build());
+		var institucionDomain = institucionAssembler.toDomain(afiliadoDtoTmp.getInstitucion());
+		var tipoIdentificacionDomain = tipoIdentificacionAssembler.toDomain(afiliadoDtoTmp.getTipoIdentificacion());
+		return AfiliadoDomain.build(afiliadoDtoTmp.getId(), afiliadoDtoTmp.getNumeroIdAfiliado(),
+				afiliadoDtoTmp.getNombre(), afiliadoDtoTmp.getCorreo(),afiliadoDtoTmp.getTelefono(), tipoIdentificacionDomain, institucionDomain);
 	}
 
 	@Override
-	public final List<AfiliadoDomain> toDomainCollection(final List<AfiliadoDTO> dtoCollection) {
-		var dtoCollectioTmp = ObjectHelper.getObjectHelper().getDefaultValue(dtoCollection, new ArrayList<AfiliadoDTO>());
-		var resultadoDomain = new ArrayList<AfiliadoDomain>();
-		
-		for (AfiliadoDTO afiliadoDto : dtoCollectioTmp) {
-			var afiliadoDomainTmp = toDomain(afiliadoDto);
-			resultadoDomain.add(afiliadoDomainTmp);
-		}
-		
-		return resultadoDomain;
+	public AfiliadoDTO toDTO(AfiliadoDomain domain) {
+		var afiliadoDomainTmp = ObjectHelper.getObjectHelper().getDefaultValue(domain, AfiliadoDomain.build());
+		var institucionDto = institucionAssembler.toDTO(afiliadoDomainTmp.getInstitucion());
+		var tipoIdentificacionDto = tipoIdentificacionAssembler.toDTO(afiliadoDomainTmp.getTipoIdentificacion());
+		return AfiliadoDTO.build().setId(afiliadoDomainTmp.getId()).setNombre(afiliadoDomainTmp.getNumeroIdAfiliado())
+				.setNombre(afiliadoDomainTmp.getNombre()).setCorreo(afiliadoDomainTmp.getCorreo()).setTelefono(afiliadoDomainTmp.getTelefono())
+				.setTipoIdentificacion(tipoIdentificacionDto).setInstitucion(institucionDto);
+				
+	}
+
+	@Override
+	public List<AfiliadoDomain> toDomainCollection(List<AfiliadoDTO> dtoCollection) {
+		var dtoCollectionTmp = ObjectHelper.getObjectHelper().getDefaultValue(dtoCollection,
+				new ArrayList<AfiliadoDTO>());
+		return dtoCollectionTmp.stream().map(this::toDomain).toList();
 	}
 
 	@Override

@@ -15,6 +15,9 @@ public class CuentaDomain {
     private AfiliadoDomain afiliado;
     private TipoCuentaDomain tipoCuenta;
     
+    public CuentaDomain() {
+		super();
+	}
 
     private CuentaDomain(final UUID id, final String numeroCuenta, final String pin, final Float saldo, final AfiliadoDomain afiliado, final TipoCuentaDomain tipoCuenta) {
         setId(id);

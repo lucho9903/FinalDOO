@@ -12,18 +12,17 @@ public class CarnetDTO {
 	private String numeroCarnet;
 	private CuentaDTO cuenta;
 	
-	
-	public CarnetDTO(final UUID id, final String numeroCarnet, final CuentaDTO ciuenta) {
-		setId(id);
-		setNumeroCarnet(numeroCarnet);
-		setCuenta(cuenta);
-	}
-
 	public CarnetDTO() {
 		super();
 		setId(UUIDHelper.getDefault());
 		setNumeroCarnet(TextHelper.EMPTY);
 		setCuenta(CuentaDTO.build());
+	}
+	
+	public CarnetDTO(final UUID id, final String numeroCarnet, final CuentaDTO ciuenta) {
+		setId(id);
+		setNumeroCarnet(numeroCarnet);
+		setCuenta(cuenta);
 	}
 	
 	public static final CarnetDTO build() {
@@ -44,7 +43,7 @@ public class CarnetDTO {
 		this.numeroCarnet=TextHelper.applyTrim(numeroCarnet);
 		return this;
 	}	
-	public final CuentaDTO get() {
+	public final CuentaDTO getCuenta() {
 		return cuenta;
 	}
 	public final CarnetDTO setCuenta(final CuentaDTO cuenta) {

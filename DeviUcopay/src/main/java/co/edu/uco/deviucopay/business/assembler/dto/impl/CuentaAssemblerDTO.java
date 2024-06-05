@@ -5,13 +5,18 @@ import java.util.ArrayList;
 import static co.edu.uco.deviucopay.crosscutting.helpers.ObjectHelper.getObjectHelper;
 import co.edu.uco.deviucopay.crosscutting.helpers.ObjectHelper;
 import co.edu.uco.deviucopay.business.assembler.dto.AssemblerDTO;
+import co.edu.uco.deviucopay.business.domain.AfiliadoDomain;
 import co.edu.uco.deviucopay.business.domain.CuentaDomain;
+import co.edu.uco.deviucopay.business.domain.TipoCuentaDomain;
+import co.edu.uco.deviucopay.dto.AfiliadoDTO;
 import co.edu.uco.deviucopay.dto.CuentaDTO;
+import co.edu.uco.deviucopay.dto.TipoCuentaDTO;
 
 public class CuentaAssemblerDTO implements AssemblerDTO<CuentaDomain, CuentaDTO> {
 
 	private static final AssemblerDTO<CuentaDomain, CuentaDTO>  instance = new CuentaAssemblerDTO();
-	
+	private static final AssemblerDTO<TipoCuentaDomain, TipoCuentaDTO> tipoCuentaAssembler = TipoCuentaAssemblerDTO.getInstance();
+	private static final AssemblerDTO<AfiliadoDomain, AfiliadoDTO> afiliadoAssembler = AfiliadoAssemblerDTO.getInstance();
 	
 	private CuentaAssemblerDTO() {
 		super();
@@ -22,39 +27,33 @@ public class CuentaAssemblerDTO implements AssemblerDTO<CuentaDomain, CuentaDTO>
 	}
 	@Override
 	public CuentaDomain toDomain(CuentaDTO data) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-
-	@Override
-	public final CuentaDTO toDTO(final CuentaDomain domain) {
-		
-		var cuentaDomainTmp = getObjectHelper().getDefaultValue(domain , CuentaDomain.build());
-		
-		return CuentaDTO.build().setId(cuentaDomainTmp.getId()).setNumeroCuenta(cuentaDomainTmp.getNumeroCuenta());
+		var cuentaDtoTmp = ObjectHelper.getObjectHelper().getDefaultValue(data, CuentaDTO.build());
+		var afiliadoDomain = afiliadoAssembler.toDomain(cuentaDtoTmp.getAfiliado());
+		var tipoCuentaDomain = tipoCuentaAssembler.toDomain(cuentaDtoTmp.getTipoCuenta());
+		return CuentaDomain.build(cuentaDtoTmp.getId(),cuentaDtoTmp.getNumeroCuenta(),cuentaDtoTmp.getPin(),
+				cuentaDtoTmp.getSaldo(), afiliadoDomain,tipoCuentaDomain);
 	}
 
 	@Override
-	public final List<CuentaDomain> toDomainCollection(final List<CuentaDTO> dtoCollection) {
-		var dtoCollectionTmp = ObjectHelper.getObjectHelper()
-				.getDefaultValue(dtoCollection, new ArrayList<CuentaDTO>());
-		var resultadoDomain = new ArrayList<CuentaDomain>();
-		
-		for (CuentaDTO cuentaDto : dtoCollectionTmp) {
-			var cuentaDomainTmp = toDomain(cuentaDto);
-			resultadoDomain.add(cuentaDomainTmp);
-		}
-		
-		return resultadoDomain;
+	public CuentaDTO toDTO(CuentaDomain domain) {
+		var cuentaDomainTmp = ObjectHelper.getObjectHelper().getDefaultValue(domain, CuentaDomain.build());
+		var afiliadoDto = afiliadoAssembler.toDTO(cuentaDomainTmp.getAfiliado());
+		var tipoCuentaDto = tipoCuentaAssembler.toDTO(cuentaDomainTmp.getTipoCuenta());
+		return CuentaDTO.build().setId(cuentaDomainTmp.getId()).setNumeroCuenta(cuentaDomainTmp.getNumeroCuenta())
+				.setPin(cuentaDomainTmp.getPin()).setSaldo(cuentaDomainTmp.getSaldo()).setTipoCuenta(tipoCuentaDto).setAfiliado(afiliadoDto);
 	}
 
 	@Override
-	public final List<CuentaDTO> toDTOCollection(final List<CuentaDomain> domainCollection) {
-		var domainCollectionTmp = ObjectHelper.getObjectHelper()
-				.getDefaultValue(domainCollection, new ArrayList<CuentaDomain>());
+	public List<CuentaDomain> toDomainCollection(List<CuentaDTO> dtoCollection) {
+		var dtoCollectionTmp = ObjectHelper.getObjectHelper().getDefaultValue(dtoCollection, new ArrayList<CuentaDTO>());
+		return dtoCollectionTmp.stream().map(this::toDomain).toList();
+	}
+
+	@Override
+	public List<CuentaDTO> toDTOCollection(List<CuentaDomain> domainCollection) {
+		var domainCollectionTmp = ObjectHelper.getObjectHelper().getDefaultValue(domainCollection,
+				new ArrayList<CuentaDomain>());
 		return domainCollectionTmp.stream().map(this::toDTO).toList();
 	}
 
-	
 }

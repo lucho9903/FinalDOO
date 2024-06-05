@@ -38,7 +38,7 @@ public class TipoInstitucionAssemblerDTO implements AssemblerDTO<TipoInstitucion
 	public List<TipoInstitucionDTO> toDTOCollection(List<TipoInstitucionDomain> domainCollection) {
 		var domainCollectionTmp = ObjectHelper.getObjectHelper().getDefaultValue(domainCollection,
 				new ArrayList<TipoInstitucionDomain>());
-		return domainCollectionTmp.stream().map(this::toDto).toList();
+		return domainCollectionTmp.stream().map(this::toDTO).toList();
 	}
 
 	@Override
