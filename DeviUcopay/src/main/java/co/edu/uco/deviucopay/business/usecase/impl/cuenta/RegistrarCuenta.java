@@ -1,16 +1,21 @@
 package co.edu.uco.deviucopay.business.usecase.impl.cuenta;
 
+import java.util.List;
 import java.util.UUID;
 
 import co.edu.uco.deviucopay.business.assembler.entity.impl.AfiliadoAssemblerEntity;
-import co.edu.uco.deviucopay.business.assembler.entity.impl.CuentaAssemblerEntity;
+import co.edu.uco.deviucopay.business.assembler.entity.impl.TipoCuentaAssemblerEntity;
 import co.edu.uco.deviucopay.business.domain.CuentaDomain;
 import co.edu.uco.deviucopay.business.usecase.UseCaseWithoutReturn;
 import co.edu.uco.deviucopay.crosscutting.exceptions.customs.BusinessDeviUcopayException;
+import co.edu.uco.deviucopay.crosscutting.exceptions.messageCatalog.MessageCatalogStrategy;
+import co.edu.uco.deviucopay.crosscutting.exceptions.messageCatalog.data.CodigoMensaje;
+import co.edu.uco.deviucopay.crosscutting.helpers.FloatHelper;
 import co.edu.uco.deviucopay.crosscutting.helpers.ObjectHelper;
 import co.edu.uco.deviucopay.crosscutting.helpers.TextHelper;
 import co.edu.uco.deviucopay.crosscutting.helpers.UUIDHelper;
 import co.edu.uco.deviucopay.data.dao.factory.DAOFactory;
+import co.edu.uco.deviucopay.entity.AfiliadoEntity;
 import co.edu.uco.deviucopay.entity.CuentaEntity;
 
 public final class RegistrarCuenta implements UseCaseWithoutReturn<CuentaDomain> {
@@ -19,76 +24,88 @@ public final class RegistrarCuenta implements UseCaseWithoutReturn<CuentaDomain>
 
     public RegistrarCuenta(final DAOFactory factory) {
         if (ObjectHelper.getObjectHelper().isNull(factory)) {
-            var mensajeUsuario = "Se ha presentado un problema tratando de llevar a cabo el registro de una cuenta";
-            var mensajeTecnico = "El DAOFactory para crear la cuenta llegó nulo.";
-            throw new BusinessDeviUcopayException(mensajeTecnico, mensajeUsuario);
+            var mensajeUsuario = MessageCatalogStrategy.getContenidoMensaje(CodigoMensaje.M00045);
+            var mensajeTecnico = MessageCatalogStrategy.getContenidoMensaje(CodigoMensaje.M00046);
+            throw new BusinessDeviUcopayException(mensajeUsuario, mensajeTecnico);
         }
+
         this.factory = factory;
     }
 
     @Override
-    public void execute(CuentaDomain data) {
-        validarNumeroCuenta(data.getNumeroCuenta());
+    public void execute(final CuentaDomain data) {
+        validarDatos(data);
+
+        List<AfiliadoEntity> afiliadoEntity = factory.getAfiliadoDAO().consultar(AfiliadoEntity.build().setId(data.getAfiliado().getId()));
+
+        if (afiliadoEntity == null) {
+            var mensajeUsuario = "El afiliado no está registrado en la institución.";
+            throw new BusinessDeviUcopayException(mensajeUsuario);
+        }
+
+        var cuentaExistente = factory.getCuentaDAO().consultar(CuentaEntity.build().setAfiliado((AfiliadoEntity) afiliadoEntity));
+        if (!cuentaExistente.isEmpty()) {
+            var mensajeUsuario = "El afiliado ya tiene una cuenta registrada.";
+            throw new BusinessDeviUcopayException(mensajeUsuario);
+        }
+
+        var numeroCuenta = generarNumeroCuentaUnico();
+        var cuentaEntity = CuentaEntity.build()
+            .setId(generarIdentificadorCuenta())
+            .setNumeroCuenta(numeroCuenta)
+            .setPin(data.getPin())
+            .setSaldo(FloatHelper.ZERO)
+            .setAfiliado(AfiliadoAssemblerEntity.getInstance().toEntity(data.getAfiliado()))
+            .setTipoCuenta(TipoCuentaAssemblerEntity.getInstance().toEntity(data.getTipoCuenta()));
+
+        factory.getCuentaDAO().crear((CuentaEntity) cuentaEntity);
+    }
+
+    private void validarDatos(CuentaDomain data) {
         validarPin(data.getPin());
         validarSaldo(data.getSaldo());
-
-        var cuentaEntity = CuentaEntity.build().setId(generarIdentificadorCuenta())
-        		.setNumeroCuenta(data.getNumeroCuenta())
-        		.setPin(data.getPin())
-        		.setSaldo(data.getSaldo())
-        		.setAfiliado(AfiliadoAssemblerEntity.getId);
-
-        factory.getCuentaDAO().crear(cuentaEntity);
     }
 
     private UUID generarIdentificadorCuenta() {
-        UUID id;
-        boolean existeId;
-        do {
+        UUID id = UUIDHelper.generate();
+        boolean existeId = true;
+
+        while (existeId) {
             id = UUIDHelper.generate();
             var cuentaEntity = CuentaEntity.build().setId(id);
             var resultados = factory.getCuentaDAO().consultar(cuentaEntity);
             existeId = !resultados.isEmpty();
-        } while (existeId);
+        }
         return id;
     }
 
-    private void validarNumeroCuenta(final String numeroCuenta) {
-        if (TextHelper.isNullOrEmpty(numeroCuenta)) {
-            var mensajeUsuario = "El número de cuenta no puede estar vacío.";
-            throw new BusinessDeviUcopayException(mensajeUsuario);
-        }
+    private String generarNumeroCuentaUnico() {
+        String numeroCuenta;
+        boolean existeNumero;
+        do {
+            numeroCuenta = String.valueOf(100000000000L + (long)(Math.random() * 899999999999L));
+            var cuentaEntity = CuentaEntity.build().setNumeroCuenta(numeroCuenta);
+            var resultados = factory.getCuentaDAO().consultar(cuentaEntity);
+            existeNumero = !resultados.isEmpty();
+        } while (existeNumero);
+        return numeroCuenta;
     }
 
     private void validarPin(final String pin) {
         if (TextHelper.isNullOrEmpty(pin)) {
-            var mensajeUsuario = "El PIN no puede estar vacío.";
+            var mensajeUsuario = MessageCatalogStrategy.getContenidoMensaje(CodigoMensaje.M00058);
             throw new BusinessDeviUcopayException(mensajeUsuario);
         }
 
-        if (pin.length() != 4 || !pin.matches("\\d{4}")) {
-            var mensajeUsuario = "El PIN debe ser un número de 4 dígitos.";
-            throw new BusinessDeviUcopayException(mensajeUsuario);
-        }
-    }
-
-    private void validarSaldo(final double saldo) {
-        if (saldo < 0) {
-            var mensajeUsuario = "El saldo no puede ser negativo.";
+        if (!pin.matches("\\d{4}")) {
+            var mensajeUsuario = MessageCatalogStrategy.getContenidoMensaje(CodigoMensaje.M00059);
             throw new BusinessDeviUcopayException(mensajeUsuario);
         }
     }
 
-    private void validarAfiliado(final String afiliado) {
-        if (TextHelper.isNullOrEmpty(afiliado)) {
-            var mensajeUsuario = "El afiliado no puede estar vacío.";
-            throw new BusinessDeviUcopayException(mensajeUsuario);
-        }
-    }
-
-    private void validarTipoCuenta(final String tipoCuenta) {
-        if (TextHelper.isNullOrEmpty(tipoCuenta)) {
-            var mensajeUsuario = "El tipo de cuenta no puede estar vacío.";
+    private void validarSaldo(final float saldo) {
+        if (saldo != FloatHelper.ZERO) {
+            var mensajeUsuario = "El saldo inicial debe ser 0.";
             throw new BusinessDeviUcopayException(mensajeUsuario);
         }
     }

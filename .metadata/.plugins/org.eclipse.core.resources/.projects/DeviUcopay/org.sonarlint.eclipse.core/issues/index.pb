@@ -215,3 +215,21 @@ Zsrc/main/java/co/edu/uco/deviucopay/business/facade/impl/carnet/ConsultarCarnet
 csrc/main/java/co/edu/uco/deviucopay/data/dao/entity/concrete/azuresql/InstitucionPostgresqlDAO.java,7\c\7c6e6ec0a49a718562c7bcc1dcc5b98745e6d40e
 —
 gsrc/main/java/co/edu/uco/deviucopay/data/dao/entity/concrete/azuresql/TipoInstitucionPostgresqlDAO.java,7\f\7faae962407cbf4680f39d9b92027cc70c13feef
+‡
+Wsrc/main/java/co/edu/uco/deviucopay/controller/response/TipoIdentificacionResponse.java,a\8\a8d11b71f85981b60c6dad904fc9f0604feb3fd9
+u
+Esrc/main/java/co/edu/uco/deviucopay/controller/response/Afiliado.java,8\a\8aec4635375e8ee82e3e6bf9464281ecef5ef612
+„
+Tsrc/main/java/co/edu/uco/deviucopay/controller/response/TipoInstitucionResponse.java,b\f\bfce8cec582edcfca8e9f538f89fb245fe55bdfc
+ 
+psrc/main/java/co/edu/uco/deviucopay/business/usecase/impl/tipoIdentificacione/ConsultarTipoIdentificaciones.java,4\e\4ee4b809b6820649db64740fc651e44083b80f3f
+s
+Csrc/main/java/co/edu/uco/deviucopay/controller/response/Carnet.java,8\c\8c06809e46846db02ca5d61ecc117aa41295167b
+{
+Ksrc/main/java/co/edu/uco/deviucopay/controller/response/CarnetResponse.java,a\e\ae2b35ed4ebfc67dbeebe5b798e9e39d574771d7
+
+Osrc/main/java/co/edu/uco/deviucopay/controller/response/TipoCuentaResponse.java,5\1\5194f732c5f1701978c749efd5876f24422533b7
+}
+Msrc/main/java/co/edu/uco/deviucopay/controller/response/AfiliadoResponse.java,5\a\5a0ea3cceb7246a8a85d8a307e816616a807742b
+€
+Psrc/main/java/co/edu/uco/deviucopay/controller/response/InstitucionResponse.java,b\e\beab9ade5aafb43bc1539e843db9ffce65b9fcce

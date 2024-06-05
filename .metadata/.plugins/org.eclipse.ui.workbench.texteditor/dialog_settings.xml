@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value="Institucion"/>
+		<item key="selection" value="Cuenta"/>
 		<item key="wrap" value="true"/>
 		<item key="casesensitive" value="false"/>
 		<item key="wholeword" value="false"/>
@@ -9,42 +9,42 @@
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
 			<item value="Sede"/>
-			<item value="TipoSede"/>
 			<item value="Departamento"/>
-			<item value="Pais"/>
-			<item value="CarnetAzureSqlDAO"/>
-			<item value="AfiliadoAzureSqlDAO"/>
-			<item value="DataGPException"/>
-			<item value="DtoGPException"/>
-			<item value="EntityGPException"/>
-			<item value="InitializerGPException"/>
-			<item value="CroscuttingGPException"/>
-			<item value="GP"/>
-			<item value="pais"/>
-			<item value="Afiliado"/>
+			<item value="parqueadero"/>
+			<item value="ciudad"/>
+			<item value="sede"/>
+			<item value="Ciudad"/>
+			<item value="d"/>
 			<item value="Parqueadero"/>
-		</list>
-		<list key="replacehistory">
-			<item value="Institucion"/>
 			<item value="Identificacion"/>
-			<item value="Cuenta"/>
+			<item value="Institucion"/>
+			<item value="Carnet"/>
 			<item value="TipoCuenta"/>
 			<item value="Afiliado"/>
+			<item value="Tipo}"/>
+			<item value="TipoSede"/>
+		</list>
+		<list key="replacehistory">
+			<item value="Cuenta"/>
+			<item value="Afiliado"/>
+			<item value="afiliado"/>
+			<item value="tipoCuenta"/>
+			<item value="cuenta"/>
+			<item value="TipoCuenta"/>
+			<item value="Institucion"/>
+			<item value="Identificacion"/>
+			<item value="Instituciones"/>
+			<item value="TipoIdentificacion"/>
 			<item value="Carnet"/>
 			<item value="CarnetPostgresqlDAOextends"/>
 			<item value="AfiliadoPostgresqlDAO"/>
 			<item value="DataDeviUcopayException"/>
 			<item value="DtoDeviUcopayException"/>
-			<item value="EntityDeviUcopayException"/>
-			<item value="InitializerDeviUcopayException"/>
-			<item value="CrossCuttingDeviUcopayException"/>
-			<item value="DeviUcopay"/>
-			<item value="TipoInstitucion"/>
 		</list>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
-		<item key="DIALOG_X_ORIGIN" value="716"/>
-		<item key="DIALOG_Y_ORIGIN" value="167"/>
+		<item key="DIALOG_X_ORIGIN" value="819"/>
+		<item key="DIALOG_Y_ORIGIN" value="249"/>
 		<item key="DIALOG_WIDTH" value="511"/>
 		<item key="DIALOG_HEIGHT" value="523"/>
 		<item key="DIALOG_FONT_NAME" value="1|Segoe UI|9.0|0|WINDOWS|1|-18|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI"/>
