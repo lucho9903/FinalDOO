@@ -44,23 +44,24 @@ public class InstitucionDTO {
 		return id;
 	}
 	public final InstitucionDTO setId( final UUID id) {
-		this.id = id;
+		this.id = UUIDHelper.getDefault(id, UUIDHelper.getDefault());
 		return this;
 	}
 	public final String getNombre() {
 		return nombre;
 	}
 	public final InstitucionDTO setNombre(final String nombre) {
-		this.nombre=TextHelper.applyTrim(nombre);
+		this.nombre = TextHelper.applyTrim(nombre);
 		return this;
 	}
 
-	public String getCorreo() {
+	public final String getCorreo() {
 		return correo;
 	}
 
-	public void setCorreo(String correo) {
+	public final InstitucionDTO setCorreo(String correo) {
 		this.correo =TextHelper.applyTrim(correo);
+		return this;
 	}
 	
 	

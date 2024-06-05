@@ -34,7 +34,7 @@ public class CarnetDTO {
 		return id;
 	}
 	public final CarnetDTO setId( final UUID id) {
-		this.id = ObjectHelper.getObjectHelper().getDefaultValue(id,UUIDHelper.generate());
+		this.id = UUIDHelper.getDefault(id, UUIDHelper.getDefault());
 		return this;
 	}
 	public final String getNumeroCarnet() {

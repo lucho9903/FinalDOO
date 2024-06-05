@@ -50,35 +50,35 @@ public class AfiliadoDTO {
 		return id;
 	}
 	public final AfiliadoDTO setId(final UUID id) {
-		this.id = ObjectHelper.getObjectHelper().getDefaultValue(id,UUIDHelper.generate());
+		this.id = UUIDHelper.getDefault(id, UUIDHelper.getDefault());
 		return this;
 	}
 	public final String getNumeroIdAfiliado() {
 		return numeroIdAfiliado;
 	}
 	public final AfiliadoDTO setNumeroIdAfiliado(final String numeroIdAfiliado) {
-		this.numeroIdAfiliado = numeroIdAfiliado;
+		this.numeroIdAfiliado = TextHelper.applyTrim(numeroIdAfiliado);
 		return this;
 	}
 	public final String getNombre() {
 		return nombre;
 	}
 	public final AfiliadoDTO setNombre(final String nombre) {
-		this.nombre = nombre;
+		this.nombre = TextHelper.applyTrim(nombre);
 		return this;
 	}
 	public final String getCorreo() {
 		return correo;
 	}
 	public final AfiliadoDTO setCorreo(final String correo) {
-		this.correo = correo;
+		this.correo = TextHelper.applyTrim(correo);
 		return this;
 	}
 	public final String getTelefono() {
 		return telefono;
 	}
 	public final AfiliadoDTO setTelefono(final String telefono) {
-		this.telefono = telefono;
+		this.telefono = TextHelper.applyTrim(telefono);
 		return this;
 	}
 

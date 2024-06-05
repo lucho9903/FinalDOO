@@ -1,0 +1,36 @@
+package co.edu.uco.deviucopay.business.usecase.impl.institucion;
+import java.util.List;
+import co.edu.uco.deviucopay.business.assembler.entity.impl.TipoCuentaAssemblerEntity;
+import co.edu.uco.deviucopay.business.domain.TipoCuentaDomain;
+import co.edu.uco.deviucopay.business.usecase.UseCaseWithReturn;
+import co.edu.uco.deviucopay.crosscutting.exceptions.customs.BusinessDeviUcopayException;
+import co.edu.uco.deviucopay.crosscutting.exceptions.messageCatalog.MessageCatalogStrategy;
+import co.edu.uco.deviucopay.crosscutting.exceptions.messageCatalog.data.CodigoMensaje;
+import co.edu.uco.deviucopay.crosscutting.helpers.ObjectHelper;
+import co.edu.uco.deviucopay.data.dao.factory.DAOFactory;
+
+
+public class ConsultarInstituciones implements UseCaseWithReturn<InstitucionesDomain, List<InstitucionesDomain>> {
+
+    private DAOFactory factory;
+
+    public ConsultarInstitucioness(final DAOFactory factory) {
+        if(ObjectHelper.getObjectHelper().isNull(factory)) {
+            var mensajeUsuario = "Se ha presentado un problema tratando de llevar a cabo la consulta de los Institucioness...";
+            var mensajeTecnico = "El dao factory para consultar el Instituciones llegó nulo...";
+            throw new BusinessGPException(mensajeUsuario, mensajeTecnico);
+        }
+        
+        this.factory = factory;
+    }
+
+    @Override
+    public List<InstitucionesDomain> execute(final InstitucionesDomain data) {
+        var InstitucionesEntityFilter = 
+                InstitucionesAssemblerEntity.getInstance().toEntity(data);
+        var resultadosEntity = factory.getInstitucionesDAO().consultar(InstitucionesEntityFilter);
+        
+        return InstitucionesAssemblerEntity.getInstance().
+                toDomainCollection(resultadosEntity);
+    }
+}

@@ -65,7 +65,6 @@ public class CuentaController {
 
 		try {
 			var facade = new RegistrarCuentaFacade();
-			
 			facade.excute(ciudad);
 			cuentaResponse.getMensajes().add("Ciudades creada Exitosamente");
 			
@@ -95,9 +94,8 @@ public class CuentaController {
 		var cuentaResponse = new CuentaResponse();
 
 		try {
-//			var facade = new EliminarCiudadFacade();
-			
-//			facade.execute(id);
+			//var facade = new EliminarCiudadFacade();
+			//facade.execute(id);
 			cuentaResponse.getMensajes().add("Ciudades eliminada Exitosamente");
 			
 

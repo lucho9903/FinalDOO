@@ -32,7 +32,7 @@ public final class TipoCuentaDTO {
 		return id;
 	}
 	public final TipoCuentaDTO setId( final UUID id) {
-		this.id = id;
+		this.id = UUIDHelper.getDefault(id, UUIDHelper.getDefault());
 		return this;
 	}
 	public final String getNombre() {
@@ -40,15 +40,16 @@ public final class TipoCuentaDTO {
 	}
 	
 	public final TipoCuentaDTO setNombre(final String nombre) {
-		this.nombre=TextHelper.applyTrim(nombre);
+		this.nombre = TextHelper.applyTrim(nombre);
 		return this;
 	}
 	
-	public String getIdentificadorTipoCuenta() {
+	public final String getIdentificadorTipoCuenta() {
 		return identificadorTipoCuenta;
 	}
 
-	public void setIdentificadorTipoCuenta(String identificadorTipoCuenta) {
+	public final TipoCuentaDTO setIdentificadorTipoCuenta(String identificadorTipoCuenta) {
 		this.identificadorTipoCuenta = TextHelper.applyTrim(identificadorTipoCuenta);
+		return this;
 	}
 }

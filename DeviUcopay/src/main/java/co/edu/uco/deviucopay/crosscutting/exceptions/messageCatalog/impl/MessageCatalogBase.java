@@ -177,8 +177,7 @@ public class MessageCatalogBase implements MessageCatalog {
 			throw new CrossCuttingDeviUcopayException(mensajeTecnico, mensajeUsuario);
 		}
 		
-		/*TODO: Tarea: asegure que si tiene parametros, el contenido 
-		 del mensaje se retorne con los parametros reemplazados {1},{2},{3}*/
+		
 		
 		return mensajes.get(codigo.getIdentificador());
 	}

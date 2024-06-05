@@ -17,3 +17,5 @@
 1717528472073	Rename type 'TipoIdentificacionAzureSqlDAO'
 1717528480498	Rename type 'TipoInstitucionAzuereSqlDAO'
 1717528499761	Delete element
+1717561564505	Rename type 'Carnet'
+1717561575163	Rename type 'Afiliado'

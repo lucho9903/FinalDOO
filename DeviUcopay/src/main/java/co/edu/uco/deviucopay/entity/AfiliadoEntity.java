@@ -30,22 +30,16 @@ public class AfiliadoEntity {
 	}
 	
 	
-	public AfiliadoEntity(UUID id, String numeroIdAfiliado, String nombre, String correo, String telefono,
-			TipoIdentificacionEntity tipoIdentificacion, InstitucionEntity institucion) {
-		super();
-		this.id = id;
-		this.numeroIdAfiliado = numeroIdAfiliado;
-		this.nombre = nombre;
-		this.correo = correo;
-		this.telefono = telefono;
-		this.tipoIdentificacion = tipoIdentificacion;
-		this.institucion = institucion;
-	
+	public AfiliadoEntity(final UUID id,final String numeroIdAfiliado,final String nombre,final String correo,final String telefono,
+			final TipoIdentificacionEntity tipoIdentificacion,final InstitucionEntity institucion) {
+		setId(id);
+		setNumeroIdAfiliado(numeroIdAfiliado);
+		setNombre(nombre);
+		setCorreo(correo);
+		setTelefono(telefono);
+		setTipoIdentificacion(tipoIdentificacion);
+		setInstitucion(institucion);
 	}
-
-	
-	
-	
 	
 	public static final AfiliadoEntity build() {
 		return new AfiliadoEntity();

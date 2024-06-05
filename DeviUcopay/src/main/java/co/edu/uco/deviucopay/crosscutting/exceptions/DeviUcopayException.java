@@ -10,20 +10,20 @@ public class DeviUcopayException extends RuntimeException{
 	protected String mensajeUsuario;
 	protected Lugar lugar;
 	
-	public DeviUcopayException(String mensajeTecnico,String mensajeUsuario, 
-		Lugar lugar, Throwable exceptionRaiz) {
+	public DeviUcopayException(final String mensajeTecnico,final String mensajeUsuario, 
+			final Lugar lugar,final Throwable exceptionRaiz) {
 		super(mensajeTecnico, exceptionRaiz);
 		setMensajeUsuario(mensajeUsuario);
 		setLugar(lugar);
 	}
 	
-	public DeviUcopayException(final String mensajeUsuario, Lugar lugar) {
-			super(mensajeUsuario);
-			setMensajeUsuario(mensajeUsuario);
-			setLugar(lugar);
+	public DeviUcopayException(final String mensajeUsuario,final Lugar lugar) {
+		super(mensajeUsuario);
+		setMensajeUsuario(mensajeUsuario);
+		setLugar(lugar);
 		}
 	
-	public DeviUcopayException(String mensajeTecnico, String mensajeUsuario, Lugar lugar ) {
+	public DeviUcopayException(final String mensajeTecnico, final String mensajeUsuario, final Lugar lugar ) {
 		super(mensajeUsuario);
 		setMensajeUsuario(mensajeUsuario);
 		setLugar(lugar);

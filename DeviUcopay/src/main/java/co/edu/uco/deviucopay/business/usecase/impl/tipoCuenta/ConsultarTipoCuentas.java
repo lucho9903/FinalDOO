@@ -1,7 +1,6 @@
 package co.edu.uco.deviucopay.business.usecase.impl.tipoCuenta;
 
 import java.util.List;
-
 import co.edu.uco.deviucopay.business.assembler.entity.impl.TipoCuentaAssemblerEntity;
 import co.edu.uco.deviucopay.business.domain.TipoCuentaDomain;
 import co.edu.uco.deviucopay.business.usecase.UseCaseWithReturn;
