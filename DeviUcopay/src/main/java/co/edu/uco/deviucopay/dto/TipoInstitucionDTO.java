@@ -38,7 +38,7 @@ public final class TipoInstitucionDTO {
 		return nombre;
 	}
 	public final TipoInstitucionDTO setNombre(final String nombre) {
-		this.nombre=TextHelper.applyTrim(nombre);
+		this.nombre = TextHelper.applyTrim(nombre);
 		return this;
 	}	
 }

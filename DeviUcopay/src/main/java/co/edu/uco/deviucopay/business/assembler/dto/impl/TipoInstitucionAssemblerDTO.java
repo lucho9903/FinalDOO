@@ -28,12 +28,6 @@ public class TipoInstitucionAssemblerDTO implements AssemblerDTO<TipoInstitucion
 	}
 
 	@Override
-	public TipoInstitucionDTO toDto(TipoInstitucionDomain domain) {
-		var tipoInstitucionDomainTmp = ObjectHelper.getObjectHelper().getDefaultValue(domain, TipoInstitucionDomain.build());
-		return TipoInstitucionDTO.build().setId(tipoInstitucionDomainTmp.getId()).setNombre(tipoInstitucionDomainTmp.getNombre());
-	}
-
-	@Override
 	public List<TipoInstitucionDomain> toDomainCollection(List<TipoInstitucionDTO> dtoCollection) {
 		var dtoCollectionTmp = ObjectHelper.getObjectHelper().getDefaultValue(dtoCollection,
 				new ArrayList<TipoInstitucionDTO>());
@@ -45,6 +39,12 @@ public class TipoInstitucionAssemblerDTO implements AssemblerDTO<TipoInstitucion
 		var domainCollectionTmp = ObjectHelper.getObjectHelper().getDefaultValue(domainCollection,
 				new ArrayList<TipoInstitucionDomain>());
 		return domainCollectionTmp.stream().map(this::toDto).toList();
+	}
+
+	@Override
+	public TipoInstitucionDTO toDTO(TipoInstitucionDomain domain) {
+		var tipoInstitucionDomainTmp = ObjectHelper.getObjectHelper().getDefaultValue(domain, TipoInstitucionDomain.build());
+		return TipoInstitucionDTO.build().setId(tipoInstitucionDomainTmp.getId()).setNombre(tipoInstitucionDomainTmp.getNombre());
 	}
 
 }
