@@ -75,7 +75,7 @@ public final class PostgresqlDAOFactory extends SqlConnection implements DAOFact
 
 	@Override
 	public CuentaDAO getCuentaDAO() {
-		return new CuentaPostgresqlDAO(getConexion(), getTipoCuentaDAO());
+		return new CuentaPostgresqlDAO(getConexion());
 	}
 
 	@Override

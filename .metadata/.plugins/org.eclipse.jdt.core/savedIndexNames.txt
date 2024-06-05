@@ -38,7 +38,6 @@ INDEX VERSION 1.134+C:\Users\Lucho\Desktop\final DOO\.metadata\.plugins\org.ecli
 51091268.index
 1117521917.index
 1594626009.index
-214795453.index
 460349578.index
 1918225470.index
 807641923.index

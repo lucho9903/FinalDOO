@@ -24,18 +24,20 @@ import co.edu.uco.deviucopay.entity.CuentaEntity;
 import co.edu.uco.deviucopay.entity.TipoCuentaEntity;
 
 public class CuentaPostgresqlDAO extends SqlConnection implements CuentaDAO{
-	private final TipoCuentaDAO tipoCuentaDAO;
 	
-	public CuentaPostgresqlDAO(final Connection connection, final TipoCuentaDAO tipoCuentaDAO) {
+	
+	
+	public CuentaPostgresqlDAO(final Connection connection) {
 		super(connection);
-		this.tipoCuentaDAO = tipoCuentaDAO;
+		
 	}
 
 	@Override
 	public final void crear(final CuentaEntity data) {
         final StringBuilder sentenciasSql = new StringBuilder();
-
-        sentenciasSql.append("INSERT INTO cuenta (id, nombre, departamento) ");
+        
+        sentenciasSql.append("INSERT INTO cuenta (id, numero_cuenta, pin, saldo, tipo_cuenta,afiliado ");
+		sentenciasSql.append("afiliado_id, tipo_cuenta_id) ");        
         sentenciasSql.append("VALUES (?, ?, ?, ?, ?, ?)");
 
         try (final PreparedStatement sentenciaSqlPreparada = getConexion().prepareStatement(sentenciasSql.toString())) {
@@ -130,7 +132,7 @@ public class CuentaPostgresqlDAO extends SqlConnection implements CuentaDAO{
 			parametros.add(data.getTipoCuenta().getId());
 		}
 
-		final List<CuentaEntity> Cuentas = new ArrayList<>();
+		final List<CuentaEntity> cuentas = new ArrayList<>();
 
 		try (final PreparedStatement sentenciaSqlPreparada = getConexion().prepareStatement(sentenciaSql.toString())) {
 			for (int i = 0; i < parametros.size(); i++) {
@@ -139,22 +141,22 @@ public class CuentaPostgresqlDAO extends SqlConnection implements CuentaDAO{
 
 			try (final ResultSet resultado = sentenciaSqlPreparada.executeQuery()) {
 				while (resultado.next()) {
-					CuentaEntity Cuenta = new CuentaEntity();
-					Cuenta.setId(UUIDHelper.convertToUUID(resultado.getString("id")));
-					Cuenta.setNumeroCuenta(resultado.getString("numero_cuenta"));
-					Cuenta.setSaldo(resultado.getFloat("saldo"));
+					CuentaEntity cuenta = new CuentaEntity();
+					cuenta.setId(UUIDHelper.convertToUUID(resultado.getString("id")));
+					cuenta.setNumeroCuenta(resultado.getString("numero_cuenta"));
+					cuenta.setSaldo(resultado.getFloat("saldo"));
 
 					TipoCuentaEntity tipoCuenta = TipoCuentaEntity.build();
 					tipoCuenta.setId(UUIDHelper.convertToUUID(resultado.getString("idTipoCuenta")));
-					Cuenta.setTipoCuenta(tipoCuenta);
+					cuenta.setTipoCuenta(tipoCuenta);
 
 					AfiliadoEntity afiliado = AfiliadoEntity.build();
 					afiliado.setId(UUIDHelper.convertToUUID(resultado.getString("idAfiliado")));
-					Cuenta.setAfiliado (afiliado);
+					cuenta.setAfiliado (afiliado);
 
 					
 
-					Cuentas.add(Cuenta);
+					cuentas.add(cuenta);
 				}
 			}
 
@@ -169,7 +171,7 @@ public class CuentaPostgresqlDAO extends SqlConnection implements CuentaDAO{
 			throw new DataDeviUcopayException(mensajeUsuario, mensajeTecnico, excepcion);
 		}
 
-		return Cuentas;
+		return cuentas;
 	}
 
 	@Override
