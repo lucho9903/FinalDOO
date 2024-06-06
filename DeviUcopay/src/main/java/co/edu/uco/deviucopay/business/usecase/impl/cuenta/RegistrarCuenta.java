@@ -8,8 +8,6 @@ import co.edu.uco.deviucopay.business.assembler.entity.impl.TipoCuentaAssemblerE
 import co.edu.uco.deviucopay.business.domain.CuentaDomain;
 import co.edu.uco.deviucopay.business.usecase.UseCaseWithoutReturn;
 import co.edu.uco.deviucopay.crosscutting.exceptions.customs.BusinessDeviUcopayException;
-import co.edu.uco.deviucopay.crosscutting.exceptions.messageCatalog.MessageCatalogStrategy;
-import co.edu.uco.deviucopay.crosscutting.exceptions.messageCatalog.data.CodigoMensaje;
 import co.edu.uco.deviucopay.crosscutting.helpers.FloatHelper;
 import co.edu.uco.deviucopay.crosscutting.helpers.ObjectHelper;
 import co.edu.uco.deviucopay.crosscutting.helpers.TextHelper;
@@ -24,9 +22,9 @@ public final class RegistrarCuenta implements UseCaseWithoutReturn<CuentaDomain>
 
     public RegistrarCuenta(final DAOFactory factory) {
         if (ObjectHelper.getObjectHelper().isNull(factory)) {
-            var mensajeUsuario = MessageCatalogStrategy.getContenidoMensaje(CodigoMensaje.M00045);
-            var mensajeTecnico = MessageCatalogStrategy.getContenidoMensaje(CodigoMensaje.M00046);
-            throw new BusinessDeviUcopayException(mensajeUsuario, mensajeTecnico);
+            var mensajeUsuario = "Se ha presentado un problema tratando de llevar a cabo la consulta de las Cuentas";
+            var mensajeTecnico = "El DAOFactory para crear la Cuentas llegó nulo...";
+            throw new BusinessDeviUcopayException(mensajeTecnico, mensajeUsuario);
         }
 
         this.factory = factory;
@@ -36,15 +34,18 @@ public final class RegistrarCuenta implements UseCaseWithoutReturn<CuentaDomain>
     public void execute(final CuentaDomain data) {
         validarDatos(data);
 
-        List<AfiliadoEntity> afiliadoEntity = factory.getAfiliadoDAO().consultar(AfiliadoEntity.build().setId(data.getAfiliado().getId()));
+        List<AfiliadoEntity> afiliadoEntities = factory.getAfiliadoDAO().consultar(AfiliadoEntity.build().setId(data.getAfiliado().getId()));
 
-        if (afiliadoEntity == null) {
+        if (afiliadoEntities == null || afiliadoEntities.isEmpty()) {
             var mensajeUsuario = "El afiliado no está registrado en la institución.";
             throw new BusinessDeviUcopayException(mensajeUsuario);
         }
 
-        var cuentaExistente = factory.getCuentaDAO().consultar(CuentaEntity.build().setAfiliado((AfiliadoEntity) afiliadoEntity));
-        if (!cuentaExistente.isEmpty()) {
+        AfiliadoEntity afiliadoEntity = afiliadoEntities.get(0);
+
+        // Verificar si el afiliado ya tiene una cuenta registrada
+        var cuentaExistente = factory.getCuentaDAO().consultar(CuentaEntity.build().setAfiliado(afiliadoEntity));
+        if (cuentaExistente.isEmpty()) {
             var mensajeUsuario = "El afiliado ya tiene una cuenta registrada.";
             throw new BusinessDeviUcopayException(mensajeUsuario);
         }
@@ -53,13 +54,14 @@ public final class RegistrarCuenta implements UseCaseWithoutReturn<CuentaDomain>
         var cuentaEntity = CuentaEntity.build()
             .setId(generarIdentificadorCuenta())
             .setNumeroCuenta(numeroCuenta)
-            .setPin(data.getPin())
+            .setPin(data.getPin()) // Se establece el pin proporcionado en los datos de la cuenta
             .setSaldo(FloatHelper.ZERO)
             .setAfiliado(AfiliadoAssemblerEntity.getInstance().toEntity(data.getAfiliado()))
             .setTipoCuenta(TipoCuentaAssemblerEntity.getInstance().toEntity(data.getTipoCuenta()));
 
-        factory.getCuentaDAO().crear((CuentaEntity) cuentaEntity);
+        factory.getCuentaDAO().crear(cuentaEntity);
     }
+
 
     private void validarDatos(CuentaDomain data) {
         validarPin(data.getPin());
@@ -83,7 +85,8 @@ public final class RegistrarCuenta implements UseCaseWithoutReturn<CuentaDomain>
         String numeroCuenta;
         boolean existeNumero;
         do {
-            numeroCuenta = String.valueOf(100000000000L + (long)(Math.random() * 899999999999L));
+            // Generar un número aleatorio de 10 dígitos entre 1000000000 y 9999999999
+            numeroCuenta = String.valueOf(1000000000L + (long)(Math.random() * 9000000000L));
             var cuentaEntity = CuentaEntity.build().setNumeroCuenta(numeroCuenta);
             var resultados = factory.getCuentaDAO().consultar(cuentaEntity);
             existeNumero = !resultados.isEmpty();
@@ -93,12 +96,12 @@ public final class RegistrarCuenta implements UseCaseWithoutReturn<CuentaDomain>
 
     private void validarPin(final String pin) {
         if (TextHelper.isNullOrEmpty(pin)) {
-            var mensajeUsuario = MessageCatalogStrategy.getContenidoMensaje(CodigoMensaje.M00058);
+            var mensajeUsuario = "El pin no puede estar vacío.";
             throw new BusinessDeviUcopayException(mensajeUsuario);
         }
 
         if (!pin.matches("\\d{4}")) {
-            var mensajeUsuario = MessageCatalogStrategy.getContenidoMensaje(CodigoMensaje.M00059);
+            var mensajeUsuario = "El pin debe contener exactamente 4 dígitos.";
             throw new BusinessDeviUcopayException(mensajeUsuario);
         }
     }

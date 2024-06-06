@@ -93,7 +93,7 @@ public class MessageCatalogBase implements MessageCatalog {
 	mensajes.put(CodigoMensaje.M00038.getIdentificador(), new Mensaje(CodigoMensaje.M00038,
 			"Se ha presentado un problema consultar la informacion de las ciudad"));
 	mensajes.put(CodigoMensaje.M00039.getIdentificador(),
-			new Mensaje(CodigoMensaje.M00039, "ciudades consultadas exitosamente"));
+			new Mensaje(CodigoMensaje.M00039, "Cuentas consultadas exitosamente"));
 	mensajes.put(CodigoMensaje.M00040.getIdentificador(),
 			new Mensaje(CodigoMensaje.M00040, "departamentos consultados exitosamente"));
 	mensajes.put(CodigoMensaje.M00041.getIdentificador(),

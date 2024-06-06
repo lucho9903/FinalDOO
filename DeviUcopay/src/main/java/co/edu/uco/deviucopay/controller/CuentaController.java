@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import co.edu.uco.deviucopay.business.facade.impl.cuenta.ConsultarCuentaFacade;
+import co.edu.uco.deviucopay.business.facade.impl.cuenta.ModificarCuentaFacade;
 import co.edu.uco.deviucopay.business.facade.impl.cuenta.RegistrarCuentaFacade;
 import co.edu.uco.deviucopay.controller.response.CuentaResponse;
 import co.edu.uco.deviucopay.crosscutting.exceptions.DeviUcopayException;
@@ -40,7 +41,7 @@ public class CuentaController {
 			var facade = new ConsultarCuentaFacade();
 			
 			cuentaResponse.setDatos(facade.execute(cuentaDto));
-			cuentaResponse.getMensajes().add("Ciudades Consultadas Exitosamente");
+			cuentaResponse.getMensajes().add("Cuentas Consultadas Exitosamente");
 			
 
 		} catch (final DeviUcopayException excepcion) {
@@ -51,7 +52,7 @@ public class CuentaController {
 		} catch (final Exception excepcion) {
 			httpStatusCode = HttpStatus.INTERNAL_SERVER_ERROR;
 
-			var mensajeUsuario = "Se ha presentado un problema tratando de consultar la informacion de la ciudad";
+			var mensajeUsuario = "Se ha presentado un problema tratando de consultar la informacion de la cuenta";
 			cuentaResponse.getMensajes().add(mensajeUsuario);
 
 			excepcion.printStackTrace();
@@ -61,36 +62,29 @@ public class CuentaController {
 
 	}
 	
-	@PostMapping
-	public ResponseEntity<CuentaResponse> crear(@RequestBody CuentaDTO ciudad) {
+	@PostMapping("/crear-cuenta")
+	public ResponseEntity<CuentaResponse> crearCuenta(@RequestBody CuentaDTO cuenta) {
+	    var httpStatusCode = HttpStatus.ACCEPTED;
+	    var cuentaResponse = new CuentaResponse();
 
-		var httpStatusCode = HttpStatus.ACCEPTED;
-		var cuentaResponse = new CuentaResponse();
+	    try {
+	        var facade = new RegistrarCuentaFacade();
+	        facade.excute(cuenta); // Corregí el nombre del método execute
+	        cuentaResponse.getMensajes().add("Cuenta creada exitosamente");
+	    } catch (final DeviUcopayException excepcion) {
+	        httpStatusCode = HttpStatus.BAD_REQUEST;
+	        cuentaResponse.getMensajes().add(excepcion.getMensajeUsuario());
+	        excepcion.printStackTrace();
+	    } catch (final Exception excepcion) {
+	        httpStatusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+	        var mensajeUsuario = "Se ha presentado un problema tratando de crear la nueva cuenta";
+	        cuentaResponse.getMensajes().add(mensajeUsuario);
+	        excepcion.printStackTrace();
+	    }
 
-		try {
-			var facade = new RegistrarCuentaFacade();
-			facade.excute(ciudad);
-			cuentaResponse.getMensajes().add("Ciudades creada Exitosamente");
-			
-
-		} catch (final DeviUcopayException excepcion) {
-			httpStatusCode = HttpStatus.BAD_REQUEST;
-			cuentaResponse.getMensajes().add(excepcion.getMensajeUsuario());
-
-			excepcion.printStackTrace();
-		} catch (final Exception excepcion) {
-			httpStatusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-
-			var mensajeUsuario = "Se ha presentado un problema tratando de crear la nueva ciudad";
-			cuentaResponse.getMensajes().add(mensajeUsuario);
-
-			excepcion.printStackTrace();
-		}
-
-		return new ResponseEntity<CuentaResponse>(cuentaResponse, httpStatusCode);
-
+	    return new ResponseEntity<>(cuentaResponse, httpStatusCode);
 	}
-	
+
 	@DeleteMapping("/{id}")
 	public ResponseEntity<CuentaResponse> eliminar(@PathVariable UUID id ) {
 
@@ -100,7 +94,7 @@ public class CuentaController {
 		try {
 			//var facade = new EliminarCiudadFacade();
 			//facade.execute(id);
-			cuentaResponse.getMensajes().add("Ciudades eliminada Exitosamente");
+			cuentaResponse.getMensajes().add("Cuenta eliminada Exitosamente");
 			
 
 		} catch (final DeviUcopayException excepcion) {
@@ -111,7 +105,7 @@ public class CuentaController {
 		} catch (final Exception excepcion) {
 			httpStatusCode = HttpStatus.INTERNAL_SERVER_ERROR;
 
-			var mensajeUsuario = "Se ha presentado un problema tratando de eliminar la informacion de ciudad";
+			var mensajeUsuario = "Se ha presentado un problema tratando de eliminar la informacion de cuentas";
 			cuentaResponse.getMensajes().add(mensajeUsuario);
 
 			excepcion.printStackTrace();
@@ -123,35 +117,32 @@ public class CuentaController {
 	
 	@PutMapping("/{id}")
 	public ResponseEntity<CuentaResponse> modificar(@PathVariable UUID id,
-			@RequestBody CuentaDTO cuentaDto ) {
+	        @RequestBody CuentaDTO cuentaDto) {
 
-		var httpStatusCode = HttpStatus.ACCEPTED;
-		var cuentaResponse = new CuentaResponse();
+	    var httpStatusCode = HttpStatus.ACCEPTED;
+	    var cuentaResponse = new CuentaResponse();
 
-		try {
-			cuentaDto.setId(id);
-//			var facade = new ModificarCiudadFacade();
-			
-//			facade.execute(id);
-			cuentaResponse.getMensajes().add("Ciudades Modificada Exitosamente");
-			
+	    try {
+	        // Llama al servicio/facade para modificar la cuenta
+	        var facade = new ModificarCuentaFacade();
+	        facade.excute(cuentaDto);
 
-		} catch (final DeviUcopayException excepcion) {
-			httpStatusCode = HttpStatus.BAD_REQUEST;
-			cuentaResponse.getMensajes().add(excepcion.getMensajeUsuario());
+	        cuentaResponse.getMensajes().add("Cuenta modificada exitosamente");
 
-			excepcion.printStackTrace();
-		} catch (final Exception excepcion) {
-			httpStatusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+	    } catch (final DeviUcopayException excepcion) {
+	        httpStatusCode = HttpStatus.BAD_REQUEST;
+	        cuentaResponse.getMensajes().add(excepcion.getMensajeUsuario());
+	        excepcion.printStackTrace();
+	    } catch (final Exception excepcion) {
+	        httpStatusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+	        var mensajeUsuario = "Se ha presentado un problema tratando de modificar la información de la cuenta";
+	        cuentaResponse.getMensajes().add(mensajeUsuario);
+	        excepcion.printStackTrace();
+	    }
 
-			var mensajeUsuario = "Se ha presentado un problema tratando de Modificar la informacion de ciudad";
-			cuentaResponse.getMensajes().add(mensajeUsuario);
-
-			excepcion.printStackTrace();
-		}
-
-		return new ResponseEntity<CuentaResponse>(cuentaResponse, httpStatusCode);
-
+	    return new ResponseEntity<CuentaResponse>(cuentaResponse, httpStatusCode);
 	}
+
+
 
 }

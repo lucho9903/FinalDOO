@@ -36,20 +36,21 @@ public class CuentaPostgresqlDAO extends SqlConnection implements CuentaDAO{
 	public final void crear(final CuentaEntity data) {
         final StringBuilder sentenciasSql = new StringBuilder();
         
-        sentenciasSql.append("INSERT INTO cuenta (id, numero_cuenta, pin, saldo, tipo_cuenta,afiliado ");
-		sentenciasSql.append("afiliado_id, tipo_cuenta_id) ");        
+        
+        sentenciasSql.append("INSERT INTO cuenta (id, numero_cuenta, pin, saldo, tipo_cuenta_id, afiliado_id) ");
         sentenciasSql.append("VALUES (?, ?, ?, ?, ?, ?)");
 
         try (final PreparedStatement sentenciaSqlPreparada = getConexion().prepareStatement(sentenciasSql.toString())) {
-        	sentenciaSqlPreparada.setObject(1, data.getId());
+            sentenciaSqlPreparada.setObject(1, data.getId());
             sentenciaSqlPreparada.setString(2, data.getNumeroCuenta());
             sentenciaSqlPreparada.setObject(3, data.getPin());
             sentenciaSqlPreparada.setObject(4, data.getSaldo());
             sentenciaSqlPreparada.setObject(5, data.getTipoCuenta().getId());
             sentenciaSqlPreparada.setObject(6, data.getAfiliado().getId());
-       
 
             sentenciaSqlPreparada.executeUpdate();
+       
+
 
         } catch (final SQLException exception) {
             var mensajeUsuario = "Se ha presentado un problema tratando de crear la cuenta  por favor intente de nuevo y si el problema persiste contacte al administrador...";
@@ -93,86 +94,83 @@ public class CuentaPostgresqlDAO extends SqlConnection implements CuentaDAO{
 	}
 
 	public List<CuentaEntity> consultar(CuentaEntity data) {
-		final StringBuilder sentenciaSql = new StringBuilder();
-		sentenciaSql.append("select s.id, s.nombreCuenta, s.direccion, s.correoelectronico, s.celdascarro,");
-		sentenciaSql.append(" s.celdamoto, s.caldascamion, c.id as idCiudad,");
-		sentenciaSql.append(" c.nombre as nombreciudad, d.id as idDepartamento,");
-		sentenciaSql.append(" d.nombre as nombredepartamento, p.id as idPais,");
-		sentenciaSql.append(" p.nombre as nombrepais, par.id as idParqueadero, ");
-		sentenciaSql.append(" par.nombre as nombreparqueadero, t.id as idTipoCuenta, t.nombre as tipoCuenta");
-		sentenciaSql.append(" from Cuenta s");
-		sentenciaSql.append(" inner join ciudad c on c.id = s.ciudad_id");
-		sentenciaSql.append(" inner join departamento d on d.id = c.departamento_id");
-		sentenciaSql.append(" inner join pais p on p.id = d.pais_id");
-		sentenciaSql.append(" inner join parqueadero par on par.id = s.parqueadero_id");
-		sentenciaSql.append(" inner join tipoCuenta t on t.id = s.tipoCuenta_id");
-		sentenciaSql.append(" WHERE 1=1");
+	    final StringBuilder sentenciaSql = new StringBuilder();
+	    sentenciaSql.append("SELECT c.id, c.numero_cuenta, c.saldo, c.tipo_cuenta_id, c.afiliado_id, ");
+	    sentenciaSql.append("af.numero_id_afiliado, af.nombre AS nombre_afiliado, af.correo AS correo_afiliado, ");
+	    sentenciaSql.append("af.telefono AS telefono_afiliado, af.tipo_identificacion_id, af.institucion_id ");
+	    sentenciaSql.append("FROM cuenta c ");
+	    sentenciaSql.append("JOIN afiliado af ON c.afiliado_id = af.id ");
+	    sentenciaSql.append("WHERE 1=1 ");
 
-		final List<Object> parametros = new ArrayList<>();
+	    final List<Object> parametros = new ArrayList<>();
 
-		if (!ObjectHelper.getObjectHelper().isNull(data.getId()) && !data.getId().equals(UUIDHelper.getDefault())) {
-			sentenciaSql.append(" AND s.id = ?");
-			parametros.add(data.getId());
-		}
+	    if (!ObjectHelper.getObjectHelper().isNull(data.getId()) && !data.getId().equals(UUIDHelper.getDefault())) {
+	        sentenciaSql.append("AND c.id = ? ");
+	        parametros.add(data.getId());
+	    }
 
-		if (!TextHelper.isNullOrEmpty(data.getNumeroCuenta())) {
-			sentenciaSql.append(" AND s.nombreCuenta= ?");
-			parametros.add(data.getNumeroCuenta());
-		}
+	    if (!TextHelper.isNullOrEmpty(data.getNumeroCuenta())) {
+	        sentenciaSql.append("AND c.numero_cuenta = ? ");
+	        parametros.add(data.getNumeroCuenta());
+	    }
 
-		if (!FloatHelper.ZERO(data.getSaldo())) {
-			sentenciaSql.append(" AND s.saldo = ?");
-			parametros.add(data.getSaldo());
-		}
+	    if (!FloatHelper.ZERO(data.getSaldo())) {
+	        sentenciaSql.append("AND c.saldo = ? ");
+	        parametros.add(data.getSaldo());
+	    }
 
-		if (!ObjectHelper.getObjectHelper().isNull(data.getTipoCuenta())
-				&& !ObjectHelper.getObjectHelper().isNull(data.getTipoCuenta().getId())
-				&& !data.getTipoCuenta().getId().equals(UUIDHelper.getDefault())) {
-			sentenciaSql.append(" AND tc.id = ?");
-			parametros.add(data.getTipoCuenta().getId());
-		}
+	    if (!ObjectHelper.getObjectHelper().isNull(data.getTipoCuenta())
+	            && !ObjectHelper.getObjectHelper().isNull(data.getTipoCuenta().getId())
+	            && !data.getTipoCuenta().getId().equals(UUIDHelper.getDefault())) {
+	        sentenciaSql.append("AND c.tipo_cuenta_id = ? ");
+	        parametros.add(data.getTipoCuenta().getId());
+	    }
 
-		final List<CuentaEntity> cuentas = new ArrayList<>();
+	    final List<CuentaEntity> cuentas = new ArrayList<>();
 
-		try (final PreparedStatement sentenciaSqlPreparada = getConexion().prepareStatement(sentenciaSql.toString())) {
-			for (int i = 0; i < parametros.size(); i++) {
-				sentenciaSqlPreparada.setObject(i + 1, parametros.get(i));
-			}
+	    try (final PreparedStatement sentenciaSqlPreparada = getConexion().prepareStatement(sentenciaSql.toString())) {
+	        for (int i = 0; i < parametros.size(); i++) {
+	            sentenciaSqlPreparada.setObject(i + 1, parametros.get(i));
+	        }
 
-			try (final ResultSet resultado = sentenciaSqlPreparada.executeQuery()) {
-				while (resultado.next()) {
-					CuentaEntity cuenta = new CuentaEntity();
-					cuenta.setId(UUIDHelper.convertToUUID(resultado.getString("id")));
-					cuenta.setNumeroCuenta(resultado.getString("numero_cuenta"));
-					cuenta.setSaldo(resultado.getFloat("saldo"));
+	        try (final ResultSet resultado = sentenciaSqlPreparada.executeQuery()) {
+	            while (resultado.next()) {
+	                CuentaEntity cuenta = new CuentaEntity();
+	                cuenta.setId(UUIDHelper.convertToUUID(resultado.getString("id")));
+	                cuenta.setNumeroCuenta(resultado.getString("numero_cuenta"));
+	                cuenta.setSaldo(resultado.getFloat("saldo"));
 
-					TipoCuentaEntity tipoCuenta = TipoCuentaEntity.build();
-					tipoCuenta.setId(UUIDHelper.convertToUUID(resultado.getString("idTipoCuenta")));
-					cuenta.setTipoCuenta(tipoCuenta);
+	                TipoCuentaEntity tipoCuenta = TipoCuentaEntity.build();
+	                tipoCuenta.setId(UUIDHelper.convertToUUID(resultado.getString("tipo_cuenta_id")));
+	                cuenta.setTipoCuenta(tipoCuenta);
 
-					AfiliadoEntity afiliado = AfiliadoEntity.build();
-					afiliado.setId(UUIDHelper.convertToUUID(resultado.getString("idAfiliado")));
-					cuenta.setAfiliado (afiliado);
+	                AfiliadoEntity afiliado = AfiliadoEntity.build();
+	                afiliado.setId(UUIDHelper.convertToUUID(resultado.getString("afiliado_id")));
+	                afiliado.setNumeroIdAfiliado(resultado.getString("numero_id_afiliado"));
+	                afiliado.setNombre(resultado.getString("nombre_afiliado"));
+	                afiliado.setCorreo(resultado.getString("correo_afiliado"));
+	                afiliado.setTelefono(resultado.getString("telefono_afiliado"));
+	                // Asegúrate de establecer correctamente los otros campos de afiliado aquí
 
-					
+	                cuenta.setAfiliado(afiliado);
 
-					cuentas.add(cuenta);
-				}
-			}
+	                cuentas.add(cuenta);
+	            }
+	        }
+	    } catch (SQLException excepcion) {
+	        var mensajeUsuario = MessageCatalogStrategy.getContenidoMensaje(CodigoMensaje.M00031);
+	        var mensajeTecnico = MessageCatalogStrategy.getContenidoMensaje(CodigoMensaje.M00053);
+	        throw new DataDeviUcopayException(mensajeUsuario, mensajeTecnico, excepcion);
 
-		} catch (SQLException excepcion) {
-			var mensajeUsuario = MessageCatalogStrategy.getContenidoMensaje(CodigoMensaje.M00031);
-			var mensajeTecnico = MessageCatalogStrategy.getContenidoMensaje(CodigoMensaje.M00053);
-			throw new DataDeviUcopayException(mensajeUsuario, mensajeTecnico, excepcion);
+	    } catch (Exception excepcion) {
+	        var mensajeUsuario = MessageCatalogStrategy.getContenidoMensaje(CodigoMensaje.M00031);
+	        var mensajeTecnico = MessageCatalogStrategy.getContenidoMensaje(CodigoMensaje.M00053);
+	        throw new DataDeviUcopayException(mensajeUsuario, mensajeTecnico, excepcion);
+	    }
 
-		} catch (Exception excepcion) {
-			var mensajeUsuario = MessageCatalogStrategy.getContenidoMensaje(CodigoMensaje.M00031);
-			var mensajeTecnico = MessageCatalogStrategy.getContenidoMensaje(CodigoMensaje.M00053);
-			throw new DataDeviUcopayException(mensajeUsuario, mensajeTecnico, excepcion);
-		}
-
-		return cuentas;
+	    return cuentas;
 	}
+
 
 	@Override
 	public void eliminar (final UUID id) {
