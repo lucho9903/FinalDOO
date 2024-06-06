@@ -1,3 +1,4 @@
+
 package co.edu.uco.deviucopay.controller;
 
 import java.util.UUID;
@@ -11,13 +12,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import co.edu.uco.deviucopay.business.facade.impl.cuenta.ConsultarCuentaFacade;
 import co.edu.uco.deviucopay.business.facade.impl.cuenta.RegistrarCuentaFacade;
 import co.edu.uco.deviucopay.controller.response.CuentaResponse;
 import co.edu.uco.deviucopay.crosscutting.exceptions.DeviUcopayException;
 import co.edu.uco.deviucopay.dto.CuentaDTO;
 
-@RequestMapping("/api/v1/ciudades")
+@RestController
+@RequestMapping("/api/v1/cuenta")
 public class CuentaController {
 
 	@GetMapping("/dummy")
@@ -29,31 +33,31 @@ public class CuentaController {
 	public ResponseEntity<CuentaResponse> consultar() {
 
 		var httpStatusCode = HttpStatus.ACCEPTED;
-		var ciudadResponse = new CuentaResponse();
+		var cuentaResponse = new CuentaResponse();
 
 		try {
-			var ciudadDto = CuentaDTO.build();
+			var cuentaDto = CuentaDTO.build();
 			var facade = new ConsultarCuentaFacade();
 			
-			ciudadResponse.setDatos(facade.execute(ciudadDto));
-			ciudadResponse.getMensajes().add("Ciudades Consultadas Exitosamente");
+			cuentaResponse.setDatos(facade.execute(cuentaDto));
+			cuentaResponse.getMensajes().add("Ciudades Consultadas Exitosamente");
 			
 
 		} catch (final DeviUcopayException excepcion) {
 			httpStatusCode = HttpStatus.BAD_REQUEST;
-			ciudadResponse.getMensajes().add(excepcion.getMensajeUsuario());
+			cuentaResponse.getMensajes().add(excepcion.getMensajeUsuario());
 
 			excepcion.printStackTrace();
 		} catch (final Exception excepcion) {
 			httpStatusCode = HttpStatus.INTERNAL_SERVER_ERROR;
 
 			var mensajeUsuario = "Se ha presentado un problema tratando de consultar la informacion de la ciudad";
-			ciudadResponse.getMensajes().add(mensajeUsuario);
+			cuentaResponse.getMensajes().add(mensajeUsuario);
 
 			excepcion.printStackTrace();
 		}
 
-		return new ResponseEntity<>(ciudadResponse, httpStatusCode);
+		return new ResponseEntity<>(cuentaResponse, httpStatusCode);
 
 	}
 	
